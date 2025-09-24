@@ -1,0 +1,11 @@
+*.obj
+*.exe
+*.pdb
+*.idb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+Debug/
+Release/
