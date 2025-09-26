@@ -1,10 +1,12 @@
 #pragma once
 #include <GL/glew.h>
 
-class Shader {
-public:
+class ShaderProgram {
+private:
     GLuint shaderProgram;
-    Shader(const char* vertexSrc, const char* fragmentSrc);
+
+public:
+    ShaderProgram(const char* vertexSrc, const char* fragmentSrc);
     void use();
 };
 

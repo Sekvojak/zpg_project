@@ -6,7 +6,7 @@
 #include <iostream>
 #include "ShaderProgram.h"
 #include "Mesh.h"
-
+#include "Model.h"
 
 class Application
 {
@@ -18,8 +18,8 @@ public:
 
 private:
 	GLFWwindow* window = nullptr;
-	std::unordered_map<std::string, Shader*> shaders;
-	GLuint VAO, VBO;
+	std::unordered_map<std::string, ShaderProgram*> shaders;
 	std::vector<Mesh*> meshes;
+	std::vector<Model*> models;
 };
 
