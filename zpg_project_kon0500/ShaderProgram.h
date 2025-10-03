@@ -1,5 +1,7 @@
 #pragma once
 #include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <string>
 
 class ShaderProgram {
 private:
@@ -7,6 +9,13 @@ private:
 
 public:
     ShaderProgram(const char* vertexSrc, const char* fragmentSrc);
+    ~ShaderProgram();
+
+    void setUniform(const std::string& name, float value);
+    void setUniform(const std::string& name, int value);
+    void setUniform(const std::string& name, const glm::vec3& value);
+    void setUniform(const std::string& name, const glm::mat4& value);
+
     void use();
 };
 

@@ -1,14 +1,17 @@
-#pragma once
+﻿#pragma once
 #include <GL/glew.h>
-#include "Mesh.h"
-#include "ShaderProgram.h"
+#include <vector>
 
 class Model {
 public:
-    Model(Mesh* mesh, ShaderProgram* shader);
-    void draw();
+    Model(const std::vector<float>& vertices, int stride, int positionSize, int colorSize);
+    void setupMesh();
+    void bind();
 
 private:
-    Mesh* mesh;
-    ShaderProgram* shader;
+    GLuint VAO, VBO;
+    int stride;
+    int positionSize;
+    int colorSize;
+    std::vector<float> vertices;
 };

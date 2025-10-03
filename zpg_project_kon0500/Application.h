@@ -5,8 +5,9 @@
 #include <unordered_map>
 #include <iostream>
 #include "ShaderProgram.h"
-#include "Mesh.h"
 #include "Model.h"
+#include "DrawableObject.h"
+
 
 class Application
 {
@@ -19,7 +20,7 @@ public:
 private:
 	GLFWwindow* window = nullptr;
 	std::unordered_map<std::string, ShaderProgram*> shaders;
-	std::vector<Mesh*> meshes;
 	std::vector<Model*> models;
+	std::vector<DrawableObject*> objects;
 };
 

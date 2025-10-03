@@ -135,15 +135,22 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="DrawableObject.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractTransformation.h" />
     <ClInclude Include="Application.h" />
-    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="TransformationComposite.h" />
+    <ClInclude Include="TransformDynamicRotate.h" />
+    <ClInclude Include="TransformDynamicTranslate.h" />
+    <ClInclude Include="TransformRotate.h" />
+    <ClInclude Include="TransformScale.h" />
+    <ClInclude Include="TransformTranslate.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

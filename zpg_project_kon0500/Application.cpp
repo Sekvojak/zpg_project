@@ -1,8 +1,15 @@
-﻿#include "Application.h"
-#include "Mesh.h"
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 
+#include "Application.h"
+#include "Model.h"
+#include "Models/sphere.h"
+
+#include "TransformationComposite.h"
+#include "TransformDynamicTranslate.h"
+#include "TransformDynamicRotate.h"
+#include "TransformTranslate.h"
+#include "TransformScale.h"
 
 void Application::initialization() {
     if (!glfwInit()) exit(-1);
@@ -38,8 +45,9 @@ void Application::createShaders() {
         layout(location = 0) in vec3 position;
         layout(location = 1) in vec3 color;
         out vec3 vColor;
+        uniform mat4 model;
         void main() {
-            gl_Position = vec4(position, 1.0);
+            gl_Position = model * vec4(position, 1.0);
             vColor = color;
         })";
 
@@ -57,27 +65,54 @@ void Application::createShaders() {
     const char* vertexShaderTriangle = R"(
     #version 330 core
     layout(location = 0) in vec3 position;
+    uniform mat4 model;
+
     void main() {
-        gl_Position = vec4(position, 1.0);
+        gl_Position = model * vec4(position, 1.0);
     })";
 
     const char* fragmentShaderTriangle = R"(
     #version 330 core
     out vec4 fragColor;
     void main() {
-        fragColor = vec4(0.5, 0.0, 0.5, 1.0);
+        fragColor = vec4(1.0, 0.0, 0.0, 0.0);
     })";
     
     shaders["triangle"] = new ShaderProgram(vertexShaderTriangle, fragmentShaderTriangle);
+
+    const char* vertexShaderSphere = R"(
+    #version 330 core
+    layout(location = 0) in vec3 position;
+    layout(location = 1) in vec3 normal;
+    
+    uniform mat4 model;
+
+    out vec3 vNormal;
+
+    void main() {
+        gl_Position = model * vec4(position, 1.0);
+        vNormal = normal;
+    })";
+
+    const char* fragmentShaderSphere = R"(
+    #version 330 core
+    in vec3 vNormal;
+    out vec4 fragColor;
+
+    void main() {
+        fragColor = vec4(normalize(vNormal) * 0.5 + 0.5, 1.0); // posunutie do 0..1
+    })";
+
+    shaders["sphere"] = new ShaderProgram(vertexShaderSphere, fragmentShaderSphere);
 
 }
 
 void Application::createModels() {
     // vertexy trojuholníka
     std::vector<float> triangle = {
-        0.7f, 0.5f, 0.0f,
-        0.6f, 0.3f, 0.0f,
-        0.8f, 0.3f, 0.0f
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f
     };
 
 
@@ -91,27 +126,56 @@ void Application::createModels() {
     0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f   // modrá
     };
 
-    Mesh* triangleMesh = new Mesh(triangle, 3, 3, 0);
-    triangleMesh->setupMesh(); //   //(index , pocet , typ , normalized , posun , pocatek )   
+    Model* triangleModel = new Model(triangle, 3, 3, 0);
+    triangleModel->setupMesh(); //   //(index , pocet , typ , normalized , posun , pocatek )   
     
-    Mesh* squareMesh = new Mesh(coloredSquare, 6, 3, 3);
-    squareMesh->setupMesh();   //(index , pocet , typ , normalized , posun , pocatek ) -> 
+    Model* squareModel = new Model(coloredSquare, 6, 3, 3);
+    squareModel->setupMesh();   //(index , pocet , typ , normalized , posun , pocatek ) -> 
 
-    models.push_back(new Model(triangleMesh, shaders["triangle"]));
-    models.push_back(new Model(squareMesh, shaders["basic"]));
+    Model* sphereModel = new Model(std::vector<float>(sphere, sphere + 17280), 6, 3, 3);
+    sphereModel->setupMesh();
+
+    /*
+    DrawableObject* obj = new DrawableObject(sphereModel, shaders["sphere"]);
+    // objects.push_back(obj);
+
+
+    DrawableObject* obj2 = new DrawableObject(squareModel, shaders["basic"]);
+    // objects.push_back(obj2);
+    */
+    auto* composite = new TransformationComposite();
+    composite->addChild(new TransformScale(glm::vec3(0.5f, 0.5f, 0.5f)));
+    composite->addChild(new TransformTranslate(glm::vec3(0.0f, 0.5f, 0.0f)));
+    composite->addChild(new TransformDynamicRotate(45.0f,glm::vec3(0.0f, 0.0f, 1.0f)));
+    composite->addChild(new TransformTranslate(glm::vec3(0.0f, -0.5f, 0.0f)));
+
+
+
+
+
+    objects.push_back(new DrawableObject(triangleModel, shaders["triangle"], composite));
 
 }
 
-
 void Application::run() {
+    glEnable(GL_DEPTH_TEST);
+    double lastTime = glfwGetTime();
     while (!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT);
-    
 
+        double now = glfwGetTime();
+        float dt = static_cast<float>(now - lastTime);
+        lastTime = now;
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
         // shader -> objekt -> vykreslit
         
-        for (auto model : models) {
-            model->draw();
+        for (auto* object : objects) {
+            object->getTransformation()->update(dt);
+        }
+
+        for (auto object : objects) {
+            object->draw();
         }
 
         glfwSwapBuffers(window);
@@ -119,8 +183,8 @@ void Application::run() {
     }
 
     // cleanup
-    for (auto mesh : meshes) {
-        delete mesh;
+    for (auto model : models) {
+        delete model;
     }
 
     for (auto& pair : shaders)
