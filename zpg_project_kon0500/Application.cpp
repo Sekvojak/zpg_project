@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "Model.h"
 #include "Models/sphere.h"
+#include "Models/tree.h"
 
 #include "TransformationComposite.h"
 #include "TransformDynamicTranslate.h"
@@ -135,6 +136,9 @@ void Application::createModels() {
     Model* sphereModel = new Model(std::vector<float>(sphere, sphere + 17280), 6, 3, 3);
     sphereModel->setupMesh();
 
+    size_t treeSize = sizeof(tree) / sizeof(float);
+    Model* treeModel = new Model(std::vector<float>(tree, tree + treeSize), 6, 3, 3);
+    treeModel->setupMesh();
     /*
     DrawableObject* obj = new DrawableObject(sphereModel, shaders["sphere"]);
     // objects.push_back(obj);
@@ -144,17 +148,17 @@ void Application::createModels() {
     // objects.push_back(obj2);
     */
     auto* composite = new TransformationComposite();
-    composite->addChild(new TransformScale(glm::vec3(0.5f, 0.5f, 0.5f)));
-    composite->addChild(new TransformTranslate(glm::vec3(0.0f, 0.5f, 0.0f)));
-    composite->addChild(new TransformDynamicRotate(45.0f,glm::vec3(0.0f, 0.0f, 1.0f)));
-    composite->addChild(new TransformTranslate(glm::vec3(0.0f, -0.5f, 0.0f)));
+    composite->addChild(new TransformScale(glm::vec3(0.2f, 0.2f, 0.2f)));
+    composite->addChild(new TransformTranslate(glm::vec3(0.0f, -3.5f, 0.0f)));
+    composite->addChild(new TransformDynamicRotate(45.0f,glm::vec3(0.0f, 1.0f, 0.0f)));
 
 
 
+    auto* treeObj = new DrawableObject(treeModel, shaders["sphere"], composite);
 
 
-    objects.push_back(new DrawableObject(triangleModel, shaders["triangle"], composite));
-
+    // objects.push_back(new DrawableObject(triangleModel, shaders["triangle"], composite));
+    objects.push_back(treeObj);
 }
 
 void Application::run() {
@@ -171,8 +175,12 @@ void Application::run() {
         // shader -> objekt -> vykreslit
         
         for (auto* object : objects) {
-            object->getTransformation()->update(dt);
+            if (object->getTransformation())
+            {
+                object->getTransformation()->update(dt);
+            }
         }
+        
 
         for (auto object : objects) {
             object->draw();
