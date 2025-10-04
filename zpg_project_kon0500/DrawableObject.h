@@ -6,6 +6,7 @@
 
 class DrawableObject {
 public:
+    ~DrawableObject();
     DrawableObject(Model* model, ShaderProgram* shader, AbstractTransformation* transformation = nullptr);
     void draw();
     AbstractTransformation* getTransformation();

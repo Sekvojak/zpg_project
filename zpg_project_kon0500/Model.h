@@ -4,7 +4,7 @@
 
 class Model {
 public:
-    Model(const std::vector<float>& vertices, int stride, int positionSize, int colorSize);
+    Model(const std::vector<float>& vertices, int stride, int positionSize, int normalSize);
     void setupMesh();
     void bind();
 
@@ -12,6 +12,6 @@ private:
     GLuint VAO, VBO;
     int stride;
     int positionSize;
-    int colorSize;
+    int normalSize;
     std::vector<float> vertices;
 };

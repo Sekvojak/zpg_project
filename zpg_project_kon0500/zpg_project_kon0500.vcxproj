@@ -137,6 +137,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="DrawableObject.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneFactory.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +147,9 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="DrawableObject.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneFactory.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="TransformationComposite.h" />
     <ClInclude Include="TransformDynamicRotate.h" />

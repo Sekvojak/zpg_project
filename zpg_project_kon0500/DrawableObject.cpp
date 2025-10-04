@@ -23,3 +23,7 @@ void DrawableObject::draw() {
 AbstractTransformation* DrawableObject::getTransformation() {
 	return transformation;
 }
+
+DrawableObject::~DrawableObject() {
+	delete transformation;
+}

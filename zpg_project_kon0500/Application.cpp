@@ -6,16 +6,13 @@
 #include "Models/sphere.h"
 #include "Models/tree.h"
 
-#include "TransformationComposite.h"
-#include "TransformDynamicTranslate.h"
-#include "TransformDynamicRotate.h"
-#include "TransformTranslate.h"
-#include "TransformScale.h"
+#include "SceneManager.h"
+#include "SceneFactory.h"
 
 void Application::initialization() {
     if (!glfwInit()) exit(-1);
 
-    window = glfwCreateWindow(640, 480, "ZPG", nullptr, nullptr);
+    window = glfwCreateWindow(800, 600, "ZPG", nullptr, nullptr);
     if (!window) { glfwTerminate(); exit(-1); }
 
     glfwMakeContextCurrent(window);
@@ -27,7 +24,7 @@ void Application::initialization() {
         exit(-1);
     }
 
-    glViewport(0, 0, 640, 480);
+    glViewport(0, 0, 800, 600);
 
     printf("OpenGL Version: %s\n", glGetString(GL_VERSION));
     printf("Using GLEW %s\n", glewGetString(GLEW_VERSION));
@@ -39,6 +36,17 @@ void Application::initialization() {
     printf("Using GLFW %i.%i.%i\n", major, minor, revision);
 
 }
+
+void Application::handleInput()
+{
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+        sceneManager.setActiveScene(0);
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+        sceneManager.setActiveScene(1);
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+        sceneManager.setActiveScene(2);
+}
+
 
 void Application::createShaders() {
     const char* vertexShaderBasic = R"(
@@ -67,16 +75,19 @@ void Application::createShaders() {
     #version 330 core
     layout(location = 0) in vec3 position;
     uniform mat4 model;
+    out vec4 pos;
 
     void main() {
         gl_Position = model * vec4(position, 1.0);
+        pos = gl_Position;
     })";
 
     const char* fragmentShaderTriangle = R"(
     #version 330 core
     out vec4 fragColor;
+    in vec4 pos;
     void main() {
-        fragColor = vec4(1.0, 0.0, 0.0, 0.0);
+        fragColor = vec4(0.7, 1.0, 0.5, 1.0);
     })";
     
     shaders["triangle"] = new ShaderProgram(vertexShaderTriangle, fragmentShaderTriangle);
@@ -108,62 +119,15 @@ void Application::createShaders() {
 
 }
 
-void Application::createModels() {
-    // vertexy trojuholníka
-    std::vector<float> triangle = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
-    };
-
-
-    std::vector<float> coloredSquare = {
-   -0.5f, -0.5f, 0.0f,   1.0f, 1.0f, 0.0f,  // žltá
-   -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,  // červená
-    0.5f,  0.5f, 0.0f,   0.0f, 1.0f, 0.0f,  // zelená
-
-   -0.5f, -0.5f, 0.0f,   1.0f, 1.0f, 0.0f,  // žltá
-    0.5f,  0.5f, 0.0f,   0.0f, 1.0f, 0.0f,  // zelená
-    0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f   // modrá
-    };
-
-    Model* triangleModel = new Model(triangle, 3, 3, 0);
-    triangleModel->setupMesh(); //   //(index , pocet , typ , normalized , posun , pocatek )   
-    
-    Model* squareModel = new Model(coloredSquare, 6, 3, 3);
-    squareModel->setupMesh();   //(index , pocet , typ , normalized , posun , pocatek ) -> 
-
-    Model* sphereModel = new Model(std::vector<float>(sphere, sphere + 17280), 6, 3, 3);
-    sphereModel->setupMesh();
-
-    size_t treeSize = sizeof(tree) / sizeof(float);
-    Model* treeModel = new Model(std::vector<float>(tree, tree + treeSize), 6, 3, 3);
-    treeModel->setupMesh();
-    /*
-    DrawableObject* obj = new DrawableObject(sphereModel, shaders["sphere"]);
-    // objects.push_back(obj);
-
-
-    DrawableObject* obj2 = new DrawableObject(squareModel, shaders["basic"]);
-    // objects.push_back(obj2);
-    */
-    auto* composite = new TransformationComposite();
-    composite->addChild(new TransformScale(glm::vec3(0.2f, 0.2f, 0.2f)));
-    composite->addChild(new TransformTranslate(glm::vec3(0.0f, -3.5f, 0.0f)));
-    composite->addChild(new TransformDynamicRotate(45.0f,glm::vec3(0.0f, 1.0f, 0.0f)));
-
-
-
-    auto* treeObj = new DrawableObject(treeModel, shaders["sphere"], composite);
-
-
-    // objects.push_back(new DrawableObject(triangleModel, shaders["triangle"], composite));
-    objects.push_back(treeObj);
-}
-
 void Application::run() {
     glEnable(GL_DEPTH_TEST);
+
+    sceneManager.addScene(SceneFactory::createScene1(shaders));
+    sceneManager.addScene(SceneFactory::createScene2(shaders));
+    sceneManager.addScene(SceneFactory::createScene3(shaders));
+
     double lastTime = glfwGetTime();
+
     while (!glfwWindowShouldClose(window)) {
 
         double now = glfwGetTime();
@@ -171,29 +135,17 @@ void Application::run() {
         lastTime = now;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-        // shader -> objekt -> vykreslit
         
-        for (auto* object : objects) {
-            if (object->getTransformation())
-            {
-                object->getTransformation()->update(dt);
-            }
-        }
-        
+        handleInput();
 
-        for (auto object : objects) {
-            object->draw();
-        }
-
+        sceneManager.updateActiveScene(dt);
+        sceneManager.drawActiveScene();
+       
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     // cleanup
-    for (auto model : models) {
-        delete model;
-    }
 
     for (auto& pair : shaders)
         delete pair.second;

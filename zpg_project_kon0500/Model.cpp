@@ -1,7 +1,7 @@
 ﻿#include "Model.h"
 
-Model::Model(const std::vector<float>& vertices, int stride, int positionSize, int colorSize)
-    : vertices(vertices), VAO(0), VBO(0), stride(stride), positionSize(positionSize), colorSize(colorSize){}
+Model::Model(const std::vector<float>& vertices, int stride, int positionSize, int normalSize)
+    : vertices(vertices), VAO(0), VBO(0), stride(stride), positionSize(positionSize), normalSize(normalSize){}
 
 void Model::setupMesh() {
     glGenVertexArrays(1, &VAO);
@@ -16,7 +16,7 @@ void Model::setupMesh() {
     //(index , pocet , typ , normalized , posun , pocatek )
     
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, colorSize, GL_FLOAT, GL_TRUE, stride * sizeof(float), (void*)(positionSize * sizeof(float)));
+    glVertexAttribPointer(1, normalSize, GL_FLOAT, GL_TRUE, stride * sizeof(float), (void*)(positionSize * sizeof(float)));
 
     glBindVertexArray(0);
 
