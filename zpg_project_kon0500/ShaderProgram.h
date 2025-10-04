@@ -2,13 +2,14 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <string>
+#include "Shader.h"
 
 class ShaderProgram {
 private:
     GLuint shaderProgram;
 
 public:
-    ShaderProgram(const char* vertexSrc, const char* fragmentSrc);
+    ShaderProgram(const Shader& vertex, const Shader& fragment);
     ~ShaderProgram();
 
     void setUniform(const std::string& name, float value);

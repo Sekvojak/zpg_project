@@ -1,13 +1,8 @@
 ﻿#include <iostream>
-#include <vector>
-
 #include "Application.h"
-#include "Model.h"
-#include "Models/sphere.h"
-#include "Models/tree.h"
 
-#include "SceneManager.h"
-#include "SceneFactory.h"
+
+
 
 void Application::initialization() {
     if (!glfwInit()) exit(-1);
@@ -68,7 +63,9 @@ void Application::createShaders() {
             fragColor = vec4(vColor, 1.0);
         })";
 
-    shaders["basic"] = new ShaderProgram(vertexShaderBasic, fragmentShaderBasic);
+    Shader vertexBasic (GL_VERTEX_SHADER, vertexShaderBasic);
+    Shader fragmentBasic (GL_FRAGMENT_SHADER, fragmentShaderBasic);
+    shaders["basic"] = new ShaderProgram(vertexBasic, fragmentBasic);
 
 
     const char* vertexShaderTriangle = R"(
@@ -90,7 +87,10 @@ void Application::createShaders() {
         fragColor = vec4(0.7, 1.0, 0.5, 1.0);
     })";
     
-    shaders["triangle"] = new ShaderProgram(vertexShaderTriangle, fragmentShaderTriangle);
+
+    Shader vertexTriangle(GL_VERTEX_SHADER, vertexShaderTriangle);
+    Shader fragmentTriangle(GL_FRAGMENT_SHADER, fragmentShaderTriangle);
+    shaders["triangle"] = new ShaderProgram(vertexTriangle, fragmentTriangle);
 
     const char* vertexShaderSphere = R"(
     #version 330 core
@@ -115,7 +115,9 @@ void Application::createShaders() {
         fragColor = vec4(normalize(vNormal) * 0.5 + 0.5, 1.0); // posunutie do 0..1
     })";
 
-    shaders["sphere"] = new ShaderProgram(vertexShaderSphere, fragmentShaderSphere);
+    Shader vertexSphere(GL_VERTEX_SHADER, vertexShaderSphere);
+    Shader fragmentSphere(GL_FRAGMENT_SHADER, fragmentShaderSphere);
+    shaders["sphere"] = new ShaderProgram(vertexSphere, fragmentSphere);
 
 }
 

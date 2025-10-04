@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <map>
 #include "ShaderProgram.h"
+#include "Shader.h"
 #include "SceneManager.h"
 #include "SceneFactory.h"
 
