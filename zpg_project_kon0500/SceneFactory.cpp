@@ -52,6 +52,7 @@ Scene* SceneFactory::createScene2(std::map<std::string, ShaderProgram*>& shaders
 	auto* t1 = new TransformationComposite();
 	t1->addChild(new TransformScale(glm::vec3(scale)));
 	t1->addChild(new TransformTranslate(glm::vec3(-translation, 0.0f, 0.0f)));
+	t1->addChild(new TransformDynamicRotate(45.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
 	auto* o1 = new DrawableObject(sphereModel, shaders["sphere"], t1);
 	scene->addObject(o1);
 

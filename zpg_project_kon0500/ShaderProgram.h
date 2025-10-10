@@ -3,14 +3,22 @@
 #include <glm/glm.hpp>
 #include <string>
 #include "Shader.h"
+#include "ICameraObserver.h"
 
-class ShaderProgram {
+class Camera;
+
+class ShaderProgram : public ICameraObserver {
 private:
     GLuint shaderProgram;
+    Camera* camera;
 
 public:
     ShaderProgram(const Shader& vertex, const Shader& fragment);
     ~ShaderProgram();
+
+    void setCamera(Camera* cam); // odkaz na kameru, ktorá shader pozoruje
+
+    void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
     void setUniform(const std::string& name, float value);
     void setUniform(const std::string& name, int value);

@@ -30,10 +30,15 @@ void Application::initialization() {
     glfwGetVersion(&major, &minor, &revision);
     printf("Using GLFW %i.%i.%i\n", major, minor, revision);
 
+    camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 800, 600);
+
+    cameraController = new CameraController(camera);
+
 }
 
 void Application::handleInput()
-{
+{   
+
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
         sceneManager.setActiveScene(0);
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
@@ -49,9 +54,11 @@ void Application::createShaders() {
         layout(location = 0) in vec3 position;
         layout(location = 1) in vec3 color;
         out vec3 vColor;
-        uniform mat4 model;
+        uniform mat4 modelMatrix;
+        uniform mat4 viewMatrix;
+        uniform mat4 projectionMatrix;
         void main() {
-            gl_Position = model * vec4(position, 1.0);
+            gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
             vColor = color;
         })";
 
@@ -71,11 +78,13 @@ void Application::createShaders() {
     const char* vertexShaderTriangle = R"(
     #version 330 core
     layout(location = 0) in vec3 position;
-    uniform mat4 model;
+    uniform mat4 modelMatrix;
+    uniform mat4 viewMatrix;
+    uniform mat4 projectionMatrix;
     out vec4 pos;
 
     void main() {
-        gl_Position = model * vec4(position, 1.0);
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
         pos = gl_Position;
     })";
 
@@ -97,12 +106,14 @@ void Application::createShaders() {
     layout(location = 0) in vec3 position;
     layout(location = 1) in vec3 normal;
     
-    uniform mat4 model;
+    uniform mat4 modelMatrix;
+    uniform mat4 viewMatrix;
+    uniform mat4 projectionMatrix;
 
     out vec3 vNormal;
 
     void main() {
-        gl_Position = model * vec4(position, 1.0);
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
         vNormal = normal;
     })";
 
@@ -119,6 +130,17 @@ void Application::createShaders() {
     Shader fragmentSphere(GL_FRAGMENT_SHADER, fragmentShaderSphere);
     shaders["sphere"] = new ShaderProgram(vertexSphere, fragmentSphere);
 
+    for (auto& pair : shaders) {
+        pair.second->setCamera(camera);
+    }
+    /*
+    glm::vec3 eye = glm::vec3(0.0f, 3.0f, 5.0f);  // pozícia kamery
+    glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f); // bod, kam sa pozerá
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    
+    camera->setEyeFrontUp(eye, glm::normalize(center - eye), up);
+    */
+
 }
 
 void Application::run() {
@@ -132,6 +154,19 @@ void Application::run() {
 
     while (!glfwWindowShouldClose(window)) {
 
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+
+        static int lastWidth = width;
+        static int lastHeight = height;
+
+        if (width != lastWidth || height != lastHeight) {
+            camera->setViewport(width, height);
+            lastWidth = width;
+            lastHeight = height;
+        }
+
+
         double now = glfwGetTime();
         float dt = static_cast<float>(now - lastTime);
         lastTime = now;
@@ -139,10 +174,21 @@ void Application::run() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         handleInput();
+        
 
         sceneManager.updateActiveScene(dt);
         sceneManager.drawActiveScene();
-       
+
+
+        cameraController->update(window, dt);
+
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        cameraController->processMouse(xpos, ypos);
+
+
+
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

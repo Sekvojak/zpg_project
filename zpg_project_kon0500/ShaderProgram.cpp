@@ -3,8 +3,11 @@
 #include <string>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Camera.h"
+
 ShaderProgram::ShaderProgram(const Shader& vertex, const Shader& fragment) {
 	// shaderProgram setup
+	camera = nullptr;
 	shaderProgram = glCreateProgram(); 
 	vertex.attachTo(shaderProgram);
 	fragment.attachTo(shaderProgram);
@@ -30,6 +33,21 @@ ShaderProgram::~ShaderProgram() {
 	{
 		glDeleteProgram(shaderProgram);
 	}
+}
+
+void ShaderProgram::setCamera(Camera* cam) {
+	camera = cam;
+	if (camera)
+	{
+		camera->attachObserver(this);
+	}
+}
+
+void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
+	if (!shaderProgram) return;
+	use();
+	setUniform("viewMatrix", viewMatrix);
+	setUniform("projectionMatrix", projectionMatrix);
 }
 
 void ShaderProgram::setUniform(const std::string& name, float value) {

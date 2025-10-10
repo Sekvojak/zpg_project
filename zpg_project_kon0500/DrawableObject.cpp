@@ -12,10 +12,10 @@ DrawableObject::DrawableObject(Model* model, ShaderProgram* shader, AbstractTran
 void DrawableObject::draw() {
 	shader->use();
 	if (transformation) {
-		shader->setUniform("model", transformation->getMatrix());
+		shader->setUniform("modelMatrix", transformation->getMatrix());
 	}
 	else {
-		shader->setUniform("model", glm::mat4(1.0f)); // jednotková matica
+		shader->setUniform("modelMatrix", glm::mat4(1.0f)); // jednotková matica
 	}
 	model->bind();
 }

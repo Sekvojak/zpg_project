@@ -6,7 +6,8 @@
 #include "Shader.h"
 #include "SceneManager.h"
 #include "SceneFactory.h"
-
+#include "Camera.h"
+#include "CameraController.h"
 
 class Application
 {
@@ -19,5 +20,7 @@ private:
 	GLFWwindow* window = nullptr;
 	std::map<std::string, ShaderProgram*> shaders;
 	SceneManager sceneManager;
+	Camera* camera;
+	CameraController* cameraController;
 };
 
