@@ -33,5 +33,7 @@ public:
 
 	void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
+	void checkResize(GLFWwindow* window);
+
 };
 

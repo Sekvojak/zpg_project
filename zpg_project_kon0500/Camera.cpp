@@ -41,9 +41,9 @@ void Camera::setEyeFrontUp(glm::vec3 eye_, glm::vec3 front_, glm::vec3 up_) {
 void Camera::updateView() {
 	viewMatrix = glm::lookAt(eye, eye + front, up);
 	notifyObservers();
-	std::cout << "Eye: " << eye.x << ", " << eye.y << ", " << eye.z << std::endl;
-	std::cout << "Front: " << front.x << ", " << front.y << ", " << front.z << std::endl;
-	std::cout << "Up: " << up.x << ", " << up.y << ", " << up.z << std::endl;
+	// std::cout << "Eye: " << eye.x << ", " << eye.y << ", " << eye.z << std::endl;
+	// std::cout << "Front: " << front.x << ", " << front.y << ", " << front.z << std::endl;
+	// std::cout << "Up: " << up.x << ", " << up.y << ", " << up.z << std::endl;
 
 }
 

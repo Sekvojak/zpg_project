@@ -91,67 +91,36 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	Model* bushModel = new Model(std::vector<float>(bushes, bushes + sizeof(bushes) / sizeof(float)), 6, 3, 3);
 	bushModel->setupMesh();
 
-	Model* suziFlatModel = new Model(std::vector<float>(suziFlat, suziFlat + sizeof(suziFlat) / sizeof(float)), 6, 3, 3);
-	suziFlatModel->setupMesh();
-
-	Model* sphereModel = new Model(std::vector<float>(sphere, sphere + sizeof(sphere) / sizeof(float) ), 6, 3, 3);
-	sphereModel->setupMesh();
+	// float randomFloat = MIN + static_cast<float>(rand()) / RAND_MAX * (MAX - MIN);
 
 	
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 75; i++)
 	{	
 		auto* transform = new TransformationComposite();
 
-		float s = 0.05f + static_cast<float>(rand() % 10) / 2000.0f; // random scale
-		float x = -10.0f + static_cast<float>(rand()) / RAND_MAX * 20.0f; // -10.0 .. +10.0
-		float y = -5.0f + static_cast<float>(rand()) / RAND_MAX * 10.0f; // -5.0 .. +5.0
+		float s = 0.2f + static_cast<float>(rand()) / RAND_MAX * 0.2f; // random scale
+		float x = -50.0f + static_cast<float>(rand()) / RAND_MAX * 100.0f; 
+		float z = -25.0f + static_cast<float>(rand()) / RAND_MAX * 50.0f; 
 		transform->addChild(new TransformScale(glm::vec3(s)));
-		transform->addChild(new TransformTranslate(glm::vec3(x, y, 0.0f)));
+		transform->addChild(new TransformTranslate(glm::vec3(x, 0.0f, z)));
 
-		auto* obj = new DrawableObject(treeModel, shaderManager->get("triangle"), transform);
+		auto* obj = new DrawableObject(treeModel, shaderManager->get("basic"), transform);
 		scene->addObject(obj);
 	}
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 75; i++)
 	{
 		auto* transform = new TransformationComposite();
 
-		float s = 0.3f + static_cast<float>(rand()) / RAND_MAX * (1.2f - 0.3f); // random scale
-		float x = -1.0f + static_cast<float>(rand()) / RAND_MAX * (1.0f - -1.0f);
+		float s = 1.5f + static_cast<float>(rand()) / RAND_MAX * 1.5f; 
+		float x = -10.0f + static_cast<float>(rand()) / RAND_MAX * 20.0f; 
+		float z = -5.0f + static_cast<float>(rand()) / RAND_MAX * 10.0f; 
 		transform->addChild(new TransformScale(glm::vec3(s)));
-		transform->addChild(new TransformTranslate(glm::vec3(x, -0.5f, 0.0f)));
+		transform->addChild(new TransformTranslate(glm::vec3(x, 0.0f, z)));
 
-		auto* obj = new DrawableObject(bushModel, shaderManager->get("basic"), transform);
+		auto* obj = new DrawableObject(bushModel, shaderManager->get("sphere"), transform);
 		scene->addObject(obj);
 	}
-
-	for (int i = 0; i < 5; i++)
-	{
-		auto* transform = new TransformationComposite();
-
-		float s = 0.05f + static_cast<float>(rand()) / RAND_MAX * (0.1f - 0.05f); // random scale
-		float x = -10.0f + static_cast<float>(rand()) / RAND_MAX * (10.0f - -10.0f);
-		transform->addChild(new TransformScale(glm::vec3(s)));
-		transform->addChild(new TransformTranslate(glm::vec3(x, 0.5f, 0.0f)));
-
-		auto* obj = new DrawableObject(suziFlatModel, shaderManager->get("sphere"), transform);
-		scene->addObject(obj);
-	}
-
-	for (int i = 0; i < 5; i++)
-	{
-		auto* transform = new TransformationComposite();
-
-		float s = 0.1f + static_cast<float>(rand()) / RAND_MAX * (0.2f - 0.1f); // random scale
-		float x = -5.0f + static_cast<float>(rand()) / RAND_MAX * (5.0f - -5.0f);
-		transform->addChild(new TransformScale(glm::vec3(s)));
-		transform->addChild(new TransformTranslate(glm::vec3(x, 2.8f, 0.0f)));
-
-		auto* obj = new DrawableObject(sphereModel, shaderManager->get("sphere"), transform);
-		scene->addObject(obj);
-	}
-
-
 	
 	return scene;
 }

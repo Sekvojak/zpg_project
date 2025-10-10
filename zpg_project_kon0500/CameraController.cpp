@@ -18,7 +18,7 @@ CameraController::CameraController(Camera* cam) {
 }
 
 void CameraController::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
-	//
+	// 
 }
 
 void CameraController::update(GLFWwindow* window, float dt) {
@@ -87,3 +87,16 @@ void CameraController::processMouse(GLFWwindow* window) {
 
 }
 
+void CameraController::checkResize(GLFWwindow* window) {
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+
+	static int lastWidth = width;
+	static int lastHeight = height;
+
+	if (width != lastWidth || height != lastHeight) {
+		camera->setViewport(width, height);
+		lastWidth = width;
+		lastHeight = height;
+	}
+}

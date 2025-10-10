@@ -41,20 +41,6 @@ void Application::handleInput() {
         sceneManager.setActiveScene(2);
 }
 
-void Application::checkResize() {
-    int width, height;
-    glfwGetFramebufferSize(window, &width, &height);
-
-    static int lastWidth = width;
-    static int lastHeight = height;
-
-    if (width != lastWidth || height != lastHeight) {
-        camera->setViewport(width, height);
-        lastWidth = width;
-        lastHeight = height;
-    }
-}
-
 void Application::createShaders() {
     shaderManager.createShaders(camera);
 }
@@ -75,7 +61,6 @@ void Application::run() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        checkResize();
         handleInput();
 
         sceneManager.updateActiveScene(dt);
@@ -83,6 +68,7 @@ void Application::run() {
 
         cameraController->update(window, dt);
         cameraController->processMouse(window);
+        cameraController->checkResize(window);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
