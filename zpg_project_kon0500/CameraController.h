@@ -29,7 +29,7 @@ public:
 	void update(GLFWwindow* window, float dt);
 
 	// spracuje mys
-	void processMouse(double xPosition, double yPosition);
+	void processMouse(GLFWwindow* window);
 
 	void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 

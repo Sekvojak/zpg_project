@@ -47,7 +47,11 @@ void CameraController::update(GLFWwindow* window, float dt) {
 	camera->setEyeFrontUp(eye, front, up);
 }
 
-void CameraController::processMouse(double xPosition, double yPosition) {
+void CameraController::processMouse(GLFWwindow* window) {
+
+	double xPosition, yPosition;
+	glfwGetCursorPos(window, &xPosition, &yPosition);
+
 	if (firstMouseMove)
 	{
 		lastX = xPosition;

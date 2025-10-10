@@ -17,7 +17,7 @@
 #include <cstdlib>   // rand()
 #include <ctime>     // time()
 
-Scene* SceneFactory::createScene1(std::map<std::string, ShaderProgram*>& shaders) {
+Scene* SceneFactory::createScene1(ShaderManager* shaderManager) {
 	// vertexy trojuholníka
 	std::vector<float> triangle = {
 		-0.5f, -0.5f, 0.0f,
@@ -31,7 +31,7 @@ Scene* SceneFactory::createScene1(std::map<std::string, ShaderProgram*>& shaders
 
 	auto* composite = new TransformationComposite();
 	composite->addChild(new TransformDynamicRotate(90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
-	auto* triangleObj = new DrawableObject(triangleModel, shaders["triangle"], composite);
+	auto* triangleObj = new DrawableObject(triangleModel, shaderManager->get("triangle"), composite);
 
 	scene->addObject(triangleObj);
 
@@ -39,7 +39,7 @@ Scene* SceneFactory::createScene1(std::map<std::string, ShaderProgram*>& shaders
 }
 
 
-Scene* SceneFactory::createScene2(std::map<std::string, ShaderProgram*>& shaders) {
+Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	Scene* scene = new Scene();
 	size_t sphereSize = sizeof(sphere) / sizeof(float);
 	Model* sphereModel = new Model(std::vector<float>(sphere, sphere + sphereSize), 6, 3, 3);
@@ -53,34 +53,34 @@ Scene* SceneFactory::createScene2(std::map<std::string, ShaderProgram*>& shaders
 	t1->addChild(new TransformScale(glm::vec3(scale)));
 	t1->addChild(new TransformTranslate(glm::vec3(-translation, 0.0f, 0.0f)));
 	t1->addChild(new TransformDynamicRotate(45.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
-	auto* o1 = new DrawableObject(sphereModel, shaders["sphere"], t1);
+	auto* o1 = new DrawableObject(sphereModel, shaderManager->get("sphere"), t1);
 	scene->addObject(o1);
 
 	// x gula
 	auto* t2 = new TransformationComposite();
 	t2->addChild(new TransformScale(glm::vec3(scale)));
 	t2->addChild(new TransformTranslate(glm::vec3(translation, 0.0f, 0.0f)));
-	auto* o2 = new DrawableObject(sphereModel, shaders["sphere"], t2);
+	auto* o2 = new DrawableObject(sphereModel, shaderManager->get("sphere"), t2);
 	scene->addObject(o2);
 
 	// y gula
 	auto* t3 = new TransformationComposite();
 	t3->addChild(new TransformScale(glm::vec3(scale)));
 	t3->addChild(new TransformTranslate(glm::vec3(0.0f, translation, 0.0f)));
-	auto* o3 = new DrawableObject(sphereModel, shaders["sphere"], t3);
+	auto* o3 = new DrawableObject(sphereModel, shaderManager->get("sphere"), t3);
 	scene->addObject(o3);
 
 	// -y gula
 	auto* t4 = new TransformationComposite();
 	t4->addChild(new TransformScale(glm::vec3(scale)));
 	t4->addChild(new TransformTranslate(glm::vec3(0.0f, -translation, 0.0f)));
-	auto* o4 = new DrawableObject(sphereModel, shaders["sphere"], t4);
+	auto* o4 = new DrawableObject(sphereModel, shaderManager->get("sphere"), t4);
 	scene->addObject(o4);
 
 	return scene;
 }
 
-Scene* SceneFactory::createScene3(std::map<std::string, ShaderProgram*>& shaders) {
+Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 
 	srand((unsigned)time(nullptr));
 	auto* scene = new Scene();
@@ -108,7 +108,7 @@ Scene* SceneFactory::createScene3(std::map<std::string, ShaderProgram*>& shaders
 		transform->addChild(new TransformScale(glm::vec3(s)));
 		transform->addChild(new TransformTranslate(glm::vec3(x, y, 0.0f)));
 
-		auto* obj = new DrawableObject(treeModel, shaders["triangle"], transform);
+		auto* obj = new DrawableObject(treeModel, shaderManager->get("triangle"), transform);
 		scene->addObject(obj);
 	}
 
@@ -121,7 +121,7 @@ Scene* SceneFactory::createScene3(std::map<std::string, ShaderProgram*>& shaders
 		transform->addChild(new TransformScale(glm::vec3(s)));
 		transform->addChild(new TransformTranslate(glm::vec3(x, -0.5f, 0.0f)));
 
-		auto* obj = new DrawableObject(bushModel, shaders["basic"], transform);
+		auto* obj = new DrawableObject(bushModel, shaderManager->get("basic"), transform);
 		scene->addObject(obj);
 	}
 
@@ -134,7 +134,7 @@ Scene* SceneFactory::createScene3(std::map<std::string, ShaderProgram*>& shaders
 		transform->addChild(new TransformScale(glm::vec3(s)));
 		transform->addChild(new TransformTranslate(glm::vec3(x, 0.5f, 0.0f)));
 
-		auto* obj = new DrawableObject(suziFlatModel, shaders["sphere"], transform);
+		auto* obj = new DrawableObject(suziFlatModel, shaderManager->get("sphere"), transform);
 		scene->addObject(obj);
 	}
 
@@ -147,7 +147,7 @@ Scene* SceneFactory::createScene3(std::map<std::string, ShaderProgram*>& shaders
 		transform->addChild(new TransformScale(glm::vec3(s)));
 		transform->addChild(new TransformTranslate(glm::vec3(x, 2.8f, 0.0f)));
 
-		auto* obj = new DrawableObject(sphereModel, shaders["sphere"], transform);
+		auto* obj = new DrawableObject(sphereModel, shaderManager->get("sphere"), transform);
 		scene->addObject(obj);
 	}
 
