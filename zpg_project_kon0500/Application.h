@@ -16,7 +16,6 @@ public:
 	void createShaders();
 	void run();
 	void handleInput();
-	void checkResize();
 private:
 	GLFWwindow* window = nullptr;
 	ShaderManager shaderManager;

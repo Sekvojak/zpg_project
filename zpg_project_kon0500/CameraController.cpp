@@ -1,4 +1,4 @@
-#include "CameraController.h"
+﻿#include "CameraController.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 CameraController::CameraController(Camera* cam) {
@@ -49,6 +49,9 @@ void CameraController::update(GLFWwindow* window, float dt) {
 
 void CameraController::processMouse(GLFWwindow* window) {
 
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS)
+		return; // myš sa neberie do úvahy, pokiaľ nie je stlačené pravé tlačidlo
+
 	double xPosition, yPosition;
 	glfwGetCursorPos(window, &xPosition, &yPosition);
 
@@ -83,7 +86,6 @@ void CameraController::processMouse(GLFWwindow* window) {
 	front = glm::normalize(direction);
 
 	camera->setEyeFrontUp(eye, front, up);
-
 
 }
 
