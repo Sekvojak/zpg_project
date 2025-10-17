@@ -4,10 +4,12 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Camera.h"
+#include "Light.h"
 
 ShaderProgram::ShaderProgram(const Shader& vertex, const Shader& fragment) {
 	// shaderProgram setup
 	camera = nullptr;
+	light = nullptr;
 	shaderProgram = glCreateProgram(); 
 	vertex.attachTo(shaderProgram);
 	fragment.attachTo(shaderProgram);
@@ -43,12 +45,32 @@ void ShaderProgram::setCamera(Camera* cam) {
 	}
 }
 
-void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
+void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& eye) {
 	if (!shaderProgram) return;
 	use();
 	setUniform("viewMatrix", viewMatrix);
 	setUniform("projectionMatrix", projectionMatrix);
+	setUniform("viewPosition", eye);
 }
+
+void ShaderProgram::setLight(Light* l) {
+
+	light = l;
+	if (light)
+	{
+		light->attachObserver(this);
+	}
+}
+
+void ShaderProgram::onLightChanged(const glm::vec3& position, const glm::vec3& color) {
+	if (!shaderProgram) return;
+	use();
+	std::cout << "Light update: (" << position.x << "," << position.y << "," << position.z
+		<< ") color=(" << color.r << "," << color.g << "," << color.b << ")\n";
+	setUniform("lightPosition", position);
+	setUniform("lightColor", color);
+}
+
 
 void ShaderProgram::setUniform(const std::string& name, float value) {
 	GLint loc = glGetUniformLocation(shaderProgram, name.c_str());

@@ -19,7 +19,7 @@ private:
 	float speed;
 	float sensitivity;
 
-	bool firstMouseMove;
+	bool rightMouseHeld;
 	double lastX, lastY;
 
 public:
@@ -31,7 +31,7 @@ public:
 	// spracuje mys
 	void processMouse(GLFWwindow* window);
 
-	void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+	void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& eye);
 
 	void checkResize(GLFWwindow* window);
 

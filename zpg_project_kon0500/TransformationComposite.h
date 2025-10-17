@@ -3,6 +3,8 @@
 #include <vector>
 #include "AbstractTransformation.h"
 
+// toto si ujasnit
+// dynamic translate by mal dedit z translate...
 class TransformationComposite : public AbstractTransformation{
 
 private:

@@ -56,7 +56,7 @@ void Camera::updateProjection() {
 void Camera::attachObserver(ICameraObserver* observer) {
 	observers.push_back(observer);
 	if (observer) {
-		observer->onCameraChanged(viewMatrix, projectionMatrix);
+		observer->onCameraChanged(viewMatrix, projectionMatrix, eye);
 	}
 }
 
@@ -66,6 +66,6 @@ void Camera::detachObserver(ICameraObserver* observer) {
 
 void Camera::notifyObservers() {
 	for (auto* o : observers) {
-		o->onCameraChanged(viewMatrix, projectionMatrix);
+		o->onCameraChanged(viewMatrix, projectionMatrix, eye);
 	}
 }

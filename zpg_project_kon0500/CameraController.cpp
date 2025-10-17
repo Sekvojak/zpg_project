@@ -10,14 +10,13 @@ CameraController::CameraController(Camera* cam) {
 	pitch = 0.0f;  // hore/dole uhol
 	speed = 2.0f;   // rychlsot WASD
 	sensitivity = 0.19f;   // rychlsot mysi
-	firstMouseMove = true;
-
+	rightMouseHeld = false;
 
 	camera->attachObserver(this);
 	camera->setEyeFrontUp(eye, front, up);
 }
 
-void CameraController::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
+void CameraController::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& eye) {
 	// 
 }
 
@@ -49,17 +48,23 @@ void CameraController::update(GLFWwindow* window, float dt) {
 
 void CameraController::processMouse(GLFWwindow* window) {
 
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS)
-		return; // myš sa neberie do úvahy, pokiaľ nie je stlačené pravé tlačidlo
+	bool rightMousePressed = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
 
 	double xPosition, yPosition;
 	glfwGetCursorPos(window, &xPosition, &yPosition);
 
-	if (firstMouseMove)
+	if (rightMousePressed && !rightMouseHeld)
 	{
 		lastX = xPosition;
 		lastY = yPosition;
-		firstMouseMove = false;
+		rightMouseHeld = true;
+		return;
+	}
+
+	if (!rightMousePressed)
+	{
+		rightMouseHeld = false;
+		return;
 	}
 
 	float xOffset = (float)(xPosition - lastX) * sensitivity;

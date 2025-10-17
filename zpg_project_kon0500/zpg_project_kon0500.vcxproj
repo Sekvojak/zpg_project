@@ -136,6 +136,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraController.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="DrawableObject.cpp" />
@@ -152,6 +153,8 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraController.h" />
     <ClInclude Include="ICameraObserver.h" />
+    <ClInclude Include="ILightObserver.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="Scene.h" />
@@ -166,6 +169,16 @@
     <ClInclude Include="TransformRotate.h" />
     <ClInclude Include="TransformScale.h" />
     <ClInclude Include="TransformTranslate.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="blinn.frag" />
+    <None Include="blinn.vert" />
+    <None Include="constant.frag" />
+    <None Include="constant.vert" />
+    <None Include="lambert.frag" />
+    <None Include="lambert.vert" />
+    <None Include="phong.frag" />
+    <None Include="phong.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -11,6 +11,7 @@ DrawableObject::DrawableObject(Model* model, ShaderProgram* shader, AbstractTran
 
 void DrawableObject::draw() {
 	shader->use();
+	shader->setUniform("objectColor", objectColor);
 	if (transformation) {
 		shader->setUniform("modelMatrix", transformation->getMatrix());
 	}
@@ -26,4 +27,8 @@ AbstractTransformation* DrawableObject::getTransformation() {
 
 DrawableObject::~DrawableObject() {
 	delete transformation;
+}
+
+void DrawableObject::setColor(const glm::vec3& color) {
+	objectColor = color;
 }

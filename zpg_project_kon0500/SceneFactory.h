@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include "ShaderManager.h"
+#include "Light.h"
 
 #include "TransformationComposite.h"
 #include "TransformTranslate.h"
@@ -17,5 +18,7 @@ public:
 	static Scene* createScene1(ShaderManager* shaderManager);
 	static Scene* createScene2(ShaderManager* shaderManager);
 	static Scene* createScene3(ShaderManager* shaderManager);
+	static Scene* createScene4(ShaderManager* shaderManager);
+
 };
 

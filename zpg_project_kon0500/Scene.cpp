@@ -19,8 +19,17 @@ void Scene::update(float deltaTime) {
 	}
 }
 
+Light* Scene::getLight() {
+	return light;
+}
+
+void Scene::setLight(Light* l) { 
+	light = l; 
+}
+
 Scene::~Scene() {
 	for (auto* object : objects) {
 		delete object;
 	}
 }
+

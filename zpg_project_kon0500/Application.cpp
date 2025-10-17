@@ -39,6 +39,8 @@ void Application::handleInput() {
         sceneManager.setActiveScene(1);
     if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
         sceneManager.setActiveScene(2);
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+        sceneManager.setActiveScene(3);
 }
 
 void Application::createShaders() {
@@ -51,6 +53,8 @@ void Application::run() {
     sceneManager.addScene(SceneFactory::createScene1(&shaderManager));
     sceneManager.addScene(SceneFactory::createScene2(&shaderManager));
     sceneManager.addScene(SceneFactory::createScene3(&shaderManager));
+    sceneManager.addScene(SceneFactory::createScene4(&shaderManager));
+
 
     double lastTime = glfwGetTime();
 

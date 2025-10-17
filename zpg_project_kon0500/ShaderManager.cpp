@@ -1,4 +1,5 @@
-#include "ShaderManager.h"
+﻿#include "ShaderManager.h"
+
 
 void ShaderManager::createShaders(Camera* camera) {
     // ===== BASIC SHADER =====
@@ -25,58 +26,29 @@ void ShaderManager::createShaders(Camera* camera) {
 
     Shader vertexBasic(GL_VERTEX_SHADER, vertexShaderBasic);
     Shader fragmentBasic(GL_FRAGMENT_SHADER, fragmentShaderBasic);
-    shaders["basic"] = new ShaderProgram(vertexBasic, fragmentBasic);
+    shaders["basic"] = new ShaderProgram(vertexBasic, fragmentBasic);   // toto by malo byt prazdne new ShaderProgram();
 
-    // ===== TRIANGLE SHADER =====
-    const char* vertexShaderTriangle = R"(
-            #version 330 core
-            layout(location = 0) in vec3 position;
-            uniform mat4 modelMatrix;
-            uniform mat4 viewMatrix;
-            uniform mat4 projectionMatrix;
-            out vec4 pos;
-            void main() {
-                gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
-                pos = gl_Position;
-            })";
+    // ===== CONSTANT SHADER =====
 
-    const char* fragmentShaderTriangle = R"(
-            #version 330 core
-            out vec4 fragColor;
-            in vec4 pos;
-            void main() {
-                fragColor = vec4(0.7, 1.0, 0.5, 1.0);
-            })";
+    Shader vertexConstant(GL_VERTEX_SHADER, std::string("constant.vert"));
+    Shader fragmentConstant(GL_FRAGMENT_SHADER, std::string("constant.frag"));
+    shaders["constant"] = new ShaderProgram(vertexConstant, fragmentConstant);
 
-    Shader vertexTriangle(GL_VERTEX_SHADER, vertexShaderTriangle);
-    Shader fragmentTriangle(GL_FRAGMENT_SHADER, fragmentShaderTriangle);
-    shaders["triangle"] = new ShaderProgram(vertexTriangle, fragmentTriangle);
+    // ===== LAMBERT SHADER =====
 
-    // ===== SPHERE SHADER =====
-    const char* vertexShaderSphere = R"(
-            #version 330 core
-            layout(location = 0) in vec3 position;
-            layout(location = 1) in vec3 normal;
-            uniform mat4 modelMatrix;
-            uniform mat4 viewMatrix;
-            uniform mat4 projectionMatrix;
-            out vec3 vNormal;
-            void main() {
-                gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
-                vNormal = normal;
-            })";
+    Shader vertexLambert(GL_VERTEX_SHADER, std::string("lambert.vert"));
+    Shader fragmentLambert(GL_FRAGMENT_SHADER, std::string("lambert.frag"));
+    shaders["lambert"] = new ShaderProgram(vertexLambert, fragmentLambert);
 
-    const char* fragmentShaderSphere = R"(
-            #version 330 core
-            in vec3 vNormal;
-            out vec4 fragColor;
-            void main() {
-                fragColor = vec4(normalize(vNormal) * 0.5 + 0.5, 1.0);
-            })";
+    // ===== PHONG SHADER ====
+    Shader vertexPhong(GL_VERTEX_SHADER, std::string("phong.vert"));
+    Shader fragmentPhong(GL_FRAGMENT_SHADER, std::string("phong.frag"));
+    shaders["phong"] = new ShaderProgram(vertexPhong, fragmentPhong);
 
-    Shader vertexSphere(GL_VERTEX_SHADER, vertexShaderSphere);
-    Shader fragmentSphere(GL_FRAGMENT_SHADER, fragmentShaderSphere);
-    shaders["sphere"] = new ShaderProgram(vertexSphere, fragmentSphere);
+    // ==== BLINN - PHONG SHADER ====
+    Shader vertexBlinn(GL_VERTEX_SHADER, std::string("blinn.vert"));
+    Shader fragmentBlinn(GL_FRAGMENT_SHADER, std::string("blinn.frag"));
+    shaders["blinn"] = new ShaderProgram(vertexBlinn, fragmentBlinn);
 
     // ===== PREPOJENIE S KAMEROU =====
     for (auto& pair : shaders) {
