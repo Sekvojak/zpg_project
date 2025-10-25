@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "ShaderProgram.h"
 #include "AbstractTransformation.h"
+#include "Light.h"
 
 // AbstractTransformation premenovat na TransformComponent?
 
@@ -14,9 +15,13 @@ public:
     AbstractTransformation* getTransformation();
     void setColor(const glm::vec3& color);
 
+    void linkLight(Light* light) { linkedLight = light; }
+    Light* getLinkedLight() const { return linkedLight; }
+
 private:
     Model* model;
     ShaderProgram* shader;
     AbstractTransformation* transformation;
     glm::vec3 objectColor = glm::vec3(1.0f);
+    Light* linkedLight = nullptr;
 };

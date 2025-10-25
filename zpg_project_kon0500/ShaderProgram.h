@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "ICameraObserver.h"
 #include "ILightObserver.h"
+#include "LightManager.h"
 
 class Camera;
 class Light;
@@ -13,7 +14,7 @@ class ShaderProgram : public ICameraObserver, public ILightObserver {
 private:
     GLuint shaderProgram;
     Camera* camera;
-    Light* light;
+    LightManager* lightManager;
 
 public:
     ShaderProgram(const Shader& vertex, const Shader& fragment);
@@ -22,8 +23,8 @@ public:
     void setCamera(Camera* cam); // odkaz na kameru, ktorá shader pozoruje
     void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& eye) override;
 
-    void setLight(Light* l);
-    void onLightChanged(const glm::vec3& position, const glm::vec3& color) override;
+    void setLightManager(LightManager* lm);
+    void onLightsChanged(const std::vector<Light*>& lights) override;
 
     void setUniform(const std::string& name, float value);
     void setUniform(const std::string& name, int value);

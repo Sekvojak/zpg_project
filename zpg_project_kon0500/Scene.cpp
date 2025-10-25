@@ -16,15 +16,23 @@ void Scene::update(float deltaTime) {
 		{
 			object->getTransformation()->update(deltaTime);
 		}
+
+		if (object->getLinkedLight()) {
+			glm::vec3 newPos = object->getTransformation()->getMatrix()[3]; 
+			object->getLinkedLight()->setPosition(glm::vec3(newPos.x, newPos.y, newPos.z));
+		}
 	}
+
+	if (lightManager)
+		lightManager->notifyObservers();
 }
 
-Light* Scene::getLight() {
-	return light;
+LightManager* Scene::getLightManager() {
+	return lightManager;
 }
 
-void Scene::setLight(Light* l) { 
-	light = l; 
+void Scene::setLightManager(LightManager* lm) {
+	lightManager = lm;
 }
 
 Scene::~Scene() {

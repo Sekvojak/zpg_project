@@ -1,10 +1,14 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <vector>
+#include "Light.h"
+
+class Light;
 
 class ILightObserver
 {
 public:
-	virtual void onLightChanged(const glm::vec3& position, const glm::vec3& color) = 0;
+	virtual void onLightsChanged(const std::vector<Light*>& lights) = 0;
 	~ILightObserver() = default;
 
 

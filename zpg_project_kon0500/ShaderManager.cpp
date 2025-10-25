@@ -2,6 +2,8 @@
 
 
 void ShaderManager::createShaders(Camera* camera) {
+
+    camera_ = camera;
     // ===== BASIC SHADER =====
     const char* vertexShaderBasic = R"(
             #version 330 core
@@ -39,6 +41,7 @@ void ShaderManager::createShaders(Camera* camera) {
     Shader vertexLambert(GL_VERTEX_SHADER, std::string("lambert.vert"));
     Shader fragmentLambert(GL_FRAGMENT_SHADER, std::string("lambert.frag"));
     shaders["lambert"] = new ShaderProgram(vertexLambert, fragmentLambert);
+    shaders["lambert2"] = new ShaderProgram(vertexLambert, fragmentLambert);
 
     // ===== PHONG SHADER ====
     Shader vertexPhong(GL_VERTEX_SHADER, std::string("phong.vert"));
@@ -73,4 +76,31 @@ void ShaderManager::cleanup() {
 
 ShaderManager::~ShaderManager() {
     cleanup();
+}
+
+ShaderProgram* ShaderManager::clone(const std::string& name) {
+    if (shaders.find(name) == shaders.end())
+        return nullptr;
+
+    // Potrebujeme znovu načítať vertex a fragment súbory
+    // (toto je malý hack: ak by si chcel plnohodnotne, musel by si mať uložené Shader cesty)
+
+    // Pre jednoduchosť spravíme mapu s pôvodnými súbormi
+    std::string vertPath, fragPath;
+    if (name == "constant") { vertPath = "constant.vert"; fragPath = "constant.frag"; }
+    else if (name == "lambert" || name == "lambert2") { vertPath = "lambert.vert"; fragPath = "lambert.frag"; }
+    else if (name == "phong") { vertPath = "phong.vert"; fragPath = "phong.frag"; }
+    else if (name == "blinn") { vertPath = "blinn.vert"; fragPath = "blinn.frag"; }
+    else { return nullptr; }
+
+    Shader vertexShader(GL_VERTEX_SHADER, vertPath);
+    Shader fragmentShader(GL_FRAGMENT_SHADER, fragPath);
+    ShaderProgram* clone = new ShaderProgram(vertexShader, fragmentShader);
+
+    if (camera_)
+    {
+        clone->setCamera(camera_);
+    }
+
+    return clone;
 }

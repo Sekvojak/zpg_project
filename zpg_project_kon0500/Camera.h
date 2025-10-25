@@ -38,7 +38,7 @@ public:
 	Camera(glm::vec3 eye, glm::vec3 up, float fieldOfView, int windowWidth, int windowHeight);
 
 	// viewport
-	void setViewport(int width, int height); // nastaví viewport od (0,0) a aktualizuje aspect ratio
+	void setViewport(int width, int height); 
 	 
 	// projekcia
 	void setProjection(float fieldOfView); // zmení zorné pole a obnoví projekciu

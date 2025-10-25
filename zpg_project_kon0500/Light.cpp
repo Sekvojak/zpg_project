@@ -3,31 +3,30 @@
 Light::Light(glm::vec3 pos, glm::vec3 color) {
 	this->position = pos;
 	this->lightColor = color;
-
+	this->constant = 1.0f;
+	this->linear = 0.0f;
+	this->quadratic = 0.0f;
 }
 
-void Light::attachObserver(ILightObserver* observer) {
-	observers.push_back(observer);
-	observer->onLightChanged(position, lightColor);
+Light::Light(glm::vec3 pos, glm::vec3 color, float c, float l, float q) {
+	this->position = pos;
+	this->lightColor = color;
+	setAttenuation(c, l, q);
 }
 
-void Light::detachObserver(ILightObserver* observer) {
-	observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
-}
-
-void Light::notifyObservers() {
-	for (auto* o : observers) {
-		o->onLightChanged(position, lightColor);
-	}
-}
 
 void Light::setColor(const glm::vec3& c) {
 	lightColor = c;
-	notifyObservers();
 }
 
 void Light::setPosition(const glm::vec3& p) {
 	position = p;
-	notifyObservers();
+}
+
+
+void Light::setAttenuation(float c, float l, float q) {
+	constant = c; 
+	linear = l;
+	quadratic = q;
 }
 

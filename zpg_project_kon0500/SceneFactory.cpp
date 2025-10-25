@@ -5,6 +5,7 @@
 #include "TransformTranslate.h"
 #include "TransformScale.h"
 #include "TransformDynamicRotate.h"
+#include "TransformRandomTranslate.h"
 #include "TransformRotate.h"
 
 
@@ -35,7 +36,7 @@ Scene* SceneFactory::createScene1(ShaderManager* shaderManager) {
 
 	auto* composite = new TransformationComposite();
 	composite->addChild(new TransformDynamicRotate(90.0f, glm::vec3(0.0f, 0.0f, 1.0f)));
-	auto* triangleObj = new DrawableObject(triangleModel, shaderManager->get("constant"), composite);
+	auto* triangleObj = new DrawableObject(triangleModel, shaderManager->clone("constant"), composite);
 	triangleObj->setColor(glm::vec3(1.0f, 1.0f, 0.0f));
 
 	scene->addObject(triangleObj);
@@ -47,7 +48,21 @@ Scene* SceneFactory::createScene1(ShaderManager* shaderManager) {
 Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	Scene* scene = new Scene();
 
-	auto* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	auto* lightManager = new LightManager();
+	auto* light1 = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+
+	lightManager->addLight(light1);
+
+	auto* shaderConst = shaderManager->clone("constant");
+	auto* shaderLambert = shaderManager->clone("lambert");
+	auto* shaderPhong = shaderManager->clone("phong");
+	auto* shaderBlinn = shaderManager->clone("blinn");
+
+	lightManager->attachObserver(shaderLambert);
+	lightManager->attachObserver(shaderPhong);
+	lightManager->attachObserver(shaderBlinn);
+
+	scene->setLightManager(lightManager);
 
 	size_t sphereSize = sizeof(sphere) / sizeof(float);
 	Model* sphereModel = new Model(std::vector<float>(sphere, sphere + sphereSize), 6, 3, 3);
@@ -60,7 +75,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	auto* t1 = new TransformationComposite();
 	t1->addChild(new TransformScale(glm::vec3(scale)));
 	t1->addChild(new TransformTranslate(glm::vec3(-translation, 0.0f, 0.0f)));
-	auto* o1 = new DrawableObject(sphereModel, shaderManager->get("constant"), t1);
+	auto* o1 = new DrawableObject(sphereModel, shaderConst, t1);
 	o1->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o1);
 
@@ -68,8 +83,6 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	auto* t2 = new TransformationComposite();
 	t2->addChild(new TransformScale(glm::vec3(scale)));
 	t2->addChild(new TransformTranslate(glm::vec3(translation, 0.0f, 0.0f)));
-	auto* shaderLambert = shaderManager->get("lambert");
-	shaderLambert->setLight(light);
 	auto* o2 = new DrawableObject(sphereModel, shaderLambert, t2);
 	o2->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o2);
@@ -78,8 +91,6 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	auto* t3 = new TransformationComposite();
 	t3->addChild(new TransformScale(glm::vec3(scale)));
 	t3->addChild(new TransformTranslate(glm::vec3(0.0f, translation, 0.0f)));
-	auto* shaderPhong = shaderManager->get("phong");
-	shaderPhong->setLight(light);
 	auto* o3 = new DrawableObject(sphereModel, shaderPhong, t3);
 	o3->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o3);
@@ -88,8 +99,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	auto* t4 = new TransformationComposite();
 	t4->addChild(new TransformScale(glm::vec3(scale)));
 	t4->addChild(new TransformTranslate(glm::vec3(0.0f, -translation, 0.0f)));
-	auto* shaderBlinn = shaderManager->get("blinn");
-	shaderBlinn->setLight(light);
+
 	auto* o4 = new DrawableObject(sphereModel, shaderBlinn, t4);
 	o4->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o4);
@@ -121,9 +131,21 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	// float randomFloat = MIN + static_cast<float>(rand()) / RAND_MAX * (MAX - MIN);
 
 	// svetlo
-	auto* light = new Light(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f));
-	auto* shaderLambert = shaderManager->get("lambert");
-	shaderLambert->setLight(light);
+
+	auto* lightManager = new LightManager();
+
+	// auto* sunLight = new Light(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f), 1.0f, 0.009f, 0.0032f);
+	// lightManager->addLight(sunLight);
+
+	scene->setLightManager(lightManager);
+
+	auto* shaderLambert = shaderManager->clone("lambert");
+	shaderLambert->setLightManager(lightManager);
+
+	// shader sa pripojí na svetlá ako observer
+
+	// môžeme použiť aj shader pre "constant" objekty (napr. slnko)
+	auto* shaderConstant = shaderManager->get("constant");
 
 	// zem
 	auto* planeTransform = new TransformScale(glm::vec3(50.0f));
@@ -137,6 +159,37 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	auto* sunObj = new DrawableObject(sphereModel, shaderManager->get("constant"), sunTransform);
 	sunObj->setColor(glm::vec3(1.0f, 1.0f, 0.7f)); 
 	scene->addObject(sunObj);
+
+	int fireflyCount = 10;
+	for (int i = 0; i < fireflyCount; i++) {
+		// náhodná pozícia v priestore lesa
+		float x = -250.0f + static_cast<float>(rand()) / RAND_MAX * 500.0f;
+		float y = 24.0f + static_cast<float>(rand()) / RAND_MAX * 24.0f;
+		float z = -150.0f + static_cast<float>(rand()) / RAND_MAX * 300.0f;
+
+		// náhodný smer pohybu a rýchlosť
+		glm::vec3 velocity = glm::vec3(
+			-15.0f + static_cast<float>(rand()) / RAND_MAX * 30.0f,  
+			-0.8f + static_cast<float>(rand()) / RAND_MAX * 1.6f,  
+			-13.0f + static_cast<float>(rand()) / RAND_MAX * 26.0f
+		);
+
+
+		auto* fireflyLight = new Light(glm::vec3(x, y, z), glm::vec3(1.0f), 1.0f, 0.24f, 0.13f);
+		lightManager->addLight(fireflyLight);
+
+		// pohybová transformácia
+		auto* transform = new TransformationComposite();
+		transform->addChild(new TransformScale(glm::vec3(0.03f)));
+		transform->addChild(new TransformRandomTranslate(glm::vec3(x, y, z)));
+		
+
+		// malá gulička (viditeľná)
+		auto* firefly = new DrawableObject(sphereModel, shaderConstant, transform);
+		firefly->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+		firefly->linkLight(fireflyLight);
+		scene->addObject(firefly);
+	}
 
 
 	// stromy
@@ -199,16 +252,17 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
 	auto* scene = new Scene();
 
-	auto* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-
+	auto* lightManager = new LightManager();
+	auto* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	lightManager->addLight(light);
 	size_t sphereSize = sizeof(sphere) / sizeof(float);
 	auto* sphereModel = new Model(std::vector<float>(sphere, sphere + sphereSize), 6, 3, 3);
 	sphereModel->setupMesh();
 
-	auto* shaderConst = shaderManager->get("constant");
-	auto* shaderLambert = shaderManager->get("lambert");
+	auto* shaderConst = shaderManager->clone("constant");
+	auto* shaderLambert = shaderManager->clone("lambert");
 
-	shaderLambert->setLight(light);
+	shaderLambert->setLightManager(lightManager);
 
 
 	// slnko

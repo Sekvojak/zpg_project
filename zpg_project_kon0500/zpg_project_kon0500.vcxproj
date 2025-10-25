@@ -137,6 +137,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraController.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="DrawableObject.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="ICameraObserver.h" />
     <ClInclude Include="ILightObserver.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="LightManager.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="Scene.h" />
@@ -166,6 +168,7 @@
     <ClInclude Include="TransformationComposite.h" />
     <ClInclude Include="TransformDynamicRotate.h" />
     <ClInclude Include="TransformDynamicTranslate.h" />
+    <ClInclude Include="TransformRandomTranslate.h" />
     <ClInclude Include="TransformRotate.h" />
     <ClInclude Include="TransformScale.h" />
     <ClInclude Include="TransformTranslate.h" />

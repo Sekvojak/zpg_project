@@ -14,6 +14,7 @@ public:
 	ShaderProgram* get(const std::string& name);
 	void cleanup();
 	~ShaderManager();
-
+	ShaderProgram* clone(const std::string& name);
+	Camera* camera_ = nullptr;
 };
 
