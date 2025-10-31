@@ -2,32 +2,53 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+enum class LightType { 
+	Point = 0, 
+	Directional = 1, 
+	Spot = 2 };
 
 class Light
 {
 private:
-	glm::vec3 position;
-	glm::vec3 lightColor;
-	float constant;
-	float linear;
-	float quadratic;
+	glm::vec3 position{ 0.0f };
+	glm::vec3 lightColor{ 1.0f };
+	glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
+
+	float constant{ 1.0f };
+	float linear{ 0.0f };
+	float quadratic{ 0.0f };
+
+	float cutOff{ 0.7f };
+	LightType type{ LightType::Point };
+	bool active{ true }; // svetlo zapnute / vypnute
 
 public:
 	Light(glm::vec3 pos, glm::vec3 color);
 	Light(glm::vec3 pos, glm::vec3 color, float c, float l, float q);
-
+	Light(glm::vec3 vector, glm::vec3 color, LightType t);
+	Light(glm::vec3 pos, glm::vec3 color, LightType t,
+		float c, float l, float q, float cut);	// kompletny konstruktor pre baterku
 
 	void setPosition(const glm::vec3& p);
 	void setColor(const glm::vec3& c);
-
-
-	const glm::vec3& getPosition() const { return position; }
-	const glm::vec3& getColor() const { return lightColor; }
-	float getConstant() const { return constant; }
-	float getLinear() const { return linear; }
-	float getQuadratic() const { return quadratic; }
-
+	void setDirection(const glm::vec3& d);
 	void setAttenuation(float c, float l, float q);
+	void setCutOff(float c);
+	void setType(LightType t);
+	void setActive(bool a);
+
+
+	const glm::vec3& getPosition() const;
+	const glm::vec3& getColor() const;
+	const glm::vec3& getDirection() const;
+	LightType getType() const;
+	bool isActive() const;
+
+	float getConstant() const;
+	float getLinear() const;
+	float getQuadratic() const;
+	float getCutOff() const;
+
 
 
 };

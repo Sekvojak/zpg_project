@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "Camera.h"
 #include "ICameraObserver.h"
+#include "Light.h"
 
 class CameraController : public ICameraObserver {
 
@@ -22,6 +23,9 @@ private:
 	bool rightMouseHeld;
 	double lastX, lastY;
 
+	Light* flashlight;
+	bool flashlightEnabled = true;
+
 public:
 	CameraController(Camera* cam);
 
@@ -34,6 +38,8 @@ public:
 	void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& eye);
 
 	void checkResize(GLFWwindow* window);
+
+	Light* getFlashlight() const { return flashlight; }
 
 };
 

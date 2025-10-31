@@ -41,6 +41,8 @@ void Application::handleInput() {
         sceneManager.setActiveScene(2);
     if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
         sceneManager.setActiveScene(3);
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+        sceneManager.setActiveScene(4);
 }
 
 void Application::createShaders() {
@@ -50,11 +52,29 @@ void Application::createShaders() {
 void Application::run() {
     glEnable(GL_DEPTH_TEST);
 
-    sceneManager.addScene(SceneFactory::createScene1(&shaderManager));
-    sceneManager.addScene(SceneFactory::createScene2(&shaderManager));
-    sceneManager.addScene(SceneFactory::createScene3(&shaderManager));
-    sceneManager.addScene(SceneFactory::createScene4(&shaderManager));
+    
+    Scene* s1 = SceneFactory::createScene1(&shaderManager);
+    Scene* s2 = SceneFactory::createScene2(&shaderManager);
+    Scene* s3 = SceneFactory::createScene3(&shaderManager);
+    Scene* s4 = SceneFactory::createScene4(&shaderManager);
+    Scene* s5 = SceneFactory::createScene5(&shaderManager);
 
+   
+    
+    s1->getLightManager()->addLight(cameraController->getFlashlight());
+    s2->getLightManager()->addLight(cameraController->getFlashlight());
+    s3->getLightManager()->addLight(cameraController->getFlashlight());
+    s4->getLightManager()->addLight(cameraController->getFlashlight());
+    s5->getLightManager()->addLight(cameraController->getFlashlight());
+
+    
+    sceneManager.addScene(s1);
+    sceneManager.addScene(s2);
+    sceneManager.addScene(s3);
+    sceneManager.addScene(s4);
+    sceneManager.addScene(s5);
+
+    
 
     double lastTime = glfwGetTime();
 

@@ -12,6 +12,10 @@ DrawableObject::DrawableObject(Model* model, ShaderProgram* shader, AbstractTran
 void DrawableObject::draw() {
 	shader->use();
 	shader->setUniform("objectColor", objectColor);
+	shader->setUniform("material.ra", material.ra);
+	shader->setUniform("material.rd", material.rd);
+	shader->setUniform("material.rs", material.rs);
+	shader->setUniform("material.h", material.h);
 	if (transformation) {
 		shader->setUniform("modelMatrix", transformation->getMatrix());
 	}
@@ -19,6 +23,7 @@ void DrawableObject::draw() {
 		shader->setUniform("modelMatrix", glm::mat4(1.0f)); // jednotková matica
 	}
 	model->bind();
+	glUseProgram(0);
 }
 
 AbstractTransformation* DrawableObject::getTransformation() {

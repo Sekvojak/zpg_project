@@ -66,8 +66,6 @@ ShaderProgram* ShaderManager::get(const std::string& name) {
     return nullptr;
 }
 
-
-
 void ShaderManager::cleanup() {
     for (auto& pair : shaders)
         delete pair.second;
@@ -82,10 +80,6 @@ ShaderProgram* ShaderManager::clone(const std::string& name) {
     if (shaders.find(name) == shaders.end())
         return nullptr;
 
-    // Potrebujeme znovu načítať vertex a fragment súbory
-    // (toto je malý hack: ak by si chcel plnohodnotne, musel by si mať uložené Shader cesty)
-
-    // Pre jednoduchosť spravíme mapu s pôvodnými súbormi
     std::string vertPath, fragPath;
     if (name == "constant") { vertPath = "constant.vert"; fragPath = "constant.frag"; }
     else if (name == "lambert" || name == "lambert2") { vertPath = "lambert.vert"; fragPath = "lambert.frag"; }

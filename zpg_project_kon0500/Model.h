@@ -5,6 +5,7 @@
 class Model {
 public:
     Model(const std::vector<float>& vertices, int stride, int positionSize, int normalSize);
+    Model(const char* name);
     void setupMesh();
     void bind();
 

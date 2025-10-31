@@ -41,6 +41,9 @@ Scene* SceneFactory::createScene1(ShaderManager* shaderManager) {
 
 	scene->addObject(triangleObj);
 
+	auto* lightManager = new LightManager();
+	scene->setLightManager(lightManager);
+
 	return scene;
 }
 
@@ -75,7 +78,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	auto* t1 = new TransformationComposite();
 	t1->addChild(new TransformScale(glm::vec3(scale)));
 	t1->addChild(new TransformTranslate(glm::vec3(-translation, 0.0f, 0.0f)));
-	auto* o1 = new DrawableObject(sphereModel, shaderConst, t1);
+	auto* o1 = new DrawableObject(sphereModel, shaderPhong, t1);
 	o1->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o1);
 
@@ -83,7 +86,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	auto* t2 = new TransformationComposite();
 	t2->addChild(new TransformScale(glm::vec3(scale)));
 	t2->addChild(new TransformTranslate(glm::vec3(translation, 0.0f, 0.0f)));
-	auto* o2 = new DrawableObject(sphereModel, shaderLambert, t2);
+	auto* o2 = new DrawableObject(sphereModel, shaderPhong, t2);
 	o2->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o2);
 
@@ -100,7 +103,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	t4->addChild(new TransformScale(glm::vec3(scale)));
 	t4->addChild(new TransformTranslate(glm::vec3(0.0f, -translation, 0.0f)));
 
-	auto* o4 = new DrawableObject(sphereModel, shaderBlinn, t4);
+	auto* o4 = new DrawableObject(sphereModel, shaderPhong, t4);
 	o4->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o4);
 
@@ -140,11 +143,10 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	scene->setLightManager(lightManager);
 
 	auto* shaderLambert = shaderManager->clone("lambert");
+	auto* shaderPhong = shaderManager->clone("phong");
 	shaderLambert->setLightManager(lightManager);
+	shaderPhong->setLightManager(lightManager);
 
-	// shader sa pripojí na svetlá ako observer
-
-	// môžeme použiť aj shader pre "constant" objekty (napr. slnko)
 	auto* shaderConstant = shaderManager->get("constant");
 
 	// zem
@@ -163,24 +165,17 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	int fireflyCount = 10;
 	for (int i = 0; i < fireflyCount; i++) {
 		// náhodná pozícia v priestore lesa
-		float x = -250.0f + static_cast<float>(rand()) / RAND_MAX * 500.0f;
+		float x = -300.0f + static_cast<float>(rand()) / RAND_MAX * 600.0f;
 		float y = 24.0f + static_cast<float>(rand()) / RAND_MAX * 24.0f;
-		float z = -150.0f + static_cast<float>(rand()) / RAND_MAX * 300.0f;
+		float z = -250.0f + static_cast<float>(rand()) / RAND_MAX * 500.0f;
 
-		// náhodný smer pohybu a rýchlosť
-		glm::vec3 velocity = glm::vec3(
-			-15.0f + static_cast<float>(rand()) / RAND_MAX * 30.0f,  
-			-0.8f + static_cast<float>(rand()) / RAND_MAX * 1.6f,  
-			-13.0f + static_cast<float>(rand()) / RAND_MAX * 26.0f
-		);
-
-
-		auto* fireflyLight = new Light(glm::vec3(x, y, z), glm::vec3(1.0f), 1.0f, 0.24f, 0.13f);
+		auto* fireflyLight = new Light(glm::vec3(x, y, z), glm::vec3(1.0f, 0.9f, 0.6f));
+		fireflyLight->setAttenuation(1.0f, 0.9f, 1.5f); // slabší dosah
 		lightManager->addLight(fireflyLight);
 
 		// pohybová transformácia
 		auto* transform = new TransformationComposite();
-		transform->addChild(new TransformScale(glm::vec3(0.03f)));
+		transform->addChild(new TransformScale(glm::vec3(0.015f)));
 		transform->addChild(new TransformRandomTranslate(glm::vec3(x, y, z)));
 		
 
@@ -210,6 +205,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 			0.4f + 0.4f * (rand() / float(RAND_MAX)),
 			0.1f + 0.2f * (rand() / float(RAND_MAX))  
 		));
+
 		scene->addObject(obj);
 	}
 	// bushe
@@ -240,7 +236,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 		transform->addChild(new TransformTranslate(glm::vec3(x, 0.75f, z)));
 		transform->addChild(new TransformDynamicRotate((5.0f + static_cast<float>(rand()) / RAND_MAX * 15.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
-		auto* obj = new DrawableObject(suziModel, shaderLambert, transform);
+		auto* obj = new DrawableObject(suziModel, shaderPhong, transform);
 		obj->setColor(glm::vec3(0.24f, 0.62f, 0.55f));
 		scene->addObject(obj);
 	}
@@ -255,6 +251,9 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
 	auto* lightManager = new LightManager();
 	auto* light = new Light(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	lightManager->addLight(light);
+
+	scene->setLightManager(lightManager);
+
 	size_t sphereSize = sizeof(sphere) / sizeof(float);
 	auto* sphereModel = new Model(std::vector<float>(sphere, sphere + sphereSize), 6, 3, 3);
 	sphereModel->setupMesh();
@@ -295,6 +294,40 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
 	auto* moon = new DrawableObject(sphereModel, shaderLambert, moonWorld);
 	moon->setColor(glm::vec3(0.48f, 0.46f, 0.41f));
 	scene->addObject(moon);
+
+	return scene;
+}
+
+Scene* SceneFactory::createScene5(ShaderManager* shaderManager) {
+	auto* scene = new Scene();
+
+	auto* shaderLambert = shaderManager->clone("lambert");
+
+	auto* lightManager = new LightManager();
+	scene->setLightManager(lightManager);
+
+	auto* light = new Light(glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	lightManager->addLight(light);
+
+	scene->setLightManager(lightManager);
+	shaderLambert->setLightManager(lightManager);
+
+	
+	Model* formulaModel = new Model("formula1.obj");
+	auto* formulaTransform = new TransformationComposite();
+	formulaTransform->addChild(new TransformScale(glm::vec3(0.5f, 0.5f, 0.5f)));
+	auto* formula = new DrawableObject(formulaModel, shaderLambert, formulaTransform);
+	formula->setColor(glm::vec3(0.8f, 0.8f, 0.7f));
+	scene->addObject(formula);
+
+	Model* hamburgerModel = new Model("Hamburger_01.obj");
+	auto* hamburgerTransform = new TransformationComposite();
+	hamburgerTransform->addChild(new TransformScale(glm::vec3(0.5f, 0.5f, 0.5f)));
+	hamburgerTransform->addChild(new TransformTranslate(glm::vec3(30.f, 0.0f, 30.0f)));
+
+	auto* hamburger = new DrawableObject(hamburgerModel, shaderLambert, hamburgerTransform);
+	hamburger->setColor(glm::vec3(0.8f, 0.8f, 0.7f));
+	scene->addObject(hamburger);
 
 	return scene;
 }

@@ -8,10 +8,23 @@ uniform vec3 objectColor;
 struct Light {
     vec3 position;
     vec3 color;
+    vec3 direction;
     float constant;
     float linear;
     float quadratic;
+    float cutOff;
+    int type;
+    bool active;
 };
+
+struct Material { 
+    float ra; 
+    float rd; 
+    float rs; 
+    float h; 
+};
+
+uniform Material material;
 
 uniform int lightCount;
 uniform Light lights[20];
@@ -26,28 +39,71 @@ float attenuation ( float d , float c , float l , float q )
     return clamp ( att , 0.0 , 1.0);
 }
 
-void main() {
-    vec3 N = normalize(worldNorm);
+vec3 calcPointLight(Light light, vec3 normal, vec3 fragPos, vec3 objColor)
+{
+    vec3 lightDir = normalize(light.position - fragPos);
 
+    float distance = length(light.position - fragPos);
+    float att = attenuation(distance, light.constant, light.linear, light.quadratic);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+
+    vec3 diffuse = material.rd * diff * light.color * objColor;
+
+    return (diffuse * att);
+}
+
+vec3 calcDirectionalLight(Light light, vec3 normal, vec3 objColor)
+{
+    vec3 lightDir = normalize(-light.direction);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+
+    vec3 diffuse = material.rd * diff * light.color * objColor;
+
+    return diffuse;
+}
+
+vec3 calcSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 objColor)
+{
+    vec3 lightDir = normalize(light.position - fragPos);
+    float distance = length(light.position - fragPos);
+    float att = attenuation(distance, light.constant, light.linear, light.quadratic);
+
+    vec3 lightToFrag = normalize(fragPos - light.position); 
+    float LF = dot(lightToFrag, light.direction);
+    float intens = ( LF - light.cutOff )/( 1 - light.cutOff );
+    intens = clamp(intens, 0.0, 1.0);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+
+    vec3 diffuse = material.rd * diff * light.color * objColor;
+
+    return (diffuse * att * intens);
+}
+
+
+void main() {
+    vec3 normal = normalize(worldNorm);
     vec3 result = vec3(0.0);
 
-    vec3 ambient = vec3(0.1) * objectColor;
-    
-    for (int i = 0; i < lightCount; i++) {
-        vec3 L = normalize(lights[i].position - worldPos);
+    for (int i = 0; i < lightCount; i++)
+    {
+        if (!lights[i].active) continue;
 
-        // attenuation
-        float distance = length(lights[i].position - worldPos);
-        float att = attenuation(distance, lights[i].constant, lights[i].linear, lights[i].quadratic);
-
-        // difuzna zlozka
-        float diff = max(dot(N, L), 0.0);
-
-
-        result += diff * lights[i].color * att;
+        if (lights[i].type == 0)
+        {
+            result += calcPointLight(lights[i], normal, worldPos, objectColor);
+        }
+        else if (lights[i].type == 1)
+        {
+            result += calcDirectionalLight(lights[i], normal, objectColor);
+        }
+        else if (lights[i].type == 2)
+        {
+            result += calcSpotLight(lights[i], normal, worldPos, objectColor);
+        }
     }
-    
-                
-    vec3 finalColor = (ambient + result) * objectColor;
-    fragColor = vec4(finalColor, 1.0);
+    vec3 ambient = material.ra * objectColor;
+    fragColor = vec4(result + ambient, 1.0);
 }

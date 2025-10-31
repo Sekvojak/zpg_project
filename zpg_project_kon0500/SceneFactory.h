@@ -19,6 +19,7 @@ public:
 	static Scene* createScene2(ShaderManager* shaderManager);
 	static Scene* createScene3(ShaderManager* shaderManager);
 	static Scene* createScene4(ShaderManager* shaderManager);
+	static Scene* createScene5(ShaderManager* shaderManager);
 
 };
 

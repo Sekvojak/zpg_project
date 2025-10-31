@@ -157,6 +157,7 @@
     <ClInclude Include="ILightObserver.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="LightManager.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="DrawableObject.h" />
     <ClInclude Include="Scene.h" />

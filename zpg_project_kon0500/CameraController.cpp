@@ -14,6 +14,14 @@ CameraController::CameraController(Camera* cam) {
 
 	camera->attachObserver(this);
 	camera->setEyeFrontUp(eye, front, up);
+
+	// flashlight
+	flashlight = new Light(eye, glm::vec3(1.0f, 0.95f, 0.8f));
+	flashlight->setType(LightType::Spot);
+	flashlight->setDirection(front);
+	flashlight->setCutOff(glm::cos(glm::radians(12.5f)));
+	flashlight->setAttenuation(1.0f, 0.02f, 0.002f);
+	flashlight->setActive(false);
 }
 
 void CameraController::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& eye) {
@@ -44,6 +52,20 @@ void CameraController::update(GLFWwindow* window, float dt) {
 	}
 
 	camera->setEyeFrontUp(eye, front, up);
+	if (flashlight) {
+		flashlight->setPosition(eye);
+		flashlight->setDirection(front);
+	}
+
+	static bool fPressed = false;
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !fPressed) {
+		flashlightEnabled = !flashlightEnabled;
+		flashlight->setActive(flashlightEnabled);
+		fPressed = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE)
+		fPressed = false;
+
 }
 
 void CameraController::processMouse(GLFWwindow* window) {

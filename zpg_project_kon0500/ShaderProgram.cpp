@@ -51,6 +51,7 @@ void ShaderProgram::onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4
 	setUniform("viewMatrix", viewMatrix);
 	setUniform("projectionMatrix", projectionMatrix);
 	setUniform("viewPosition", eye);
+	glUseProgram(0);
 }
 
 void ShaderProgram::setLightManager(LightManager* lm) {
@@ -66,17 +67,18 @@ void ShaderProgram::onLightsChanged(const std::vector<Light*>& lights) {
 	use();
 	std::cout << "Updating lights: " << lights.size() << " for shader " << shaderProgram << "\n";
 	setUniform("lightCount", (int)lights.size());
-	for (int i = 0; i < lights.size(); i++)
-	{
-		std::string prefix = "lights[" + std::to_string(i) + "]";
-		setUniform(prefix + ".position", lights[i]->getPosition());
-		setUniform(prefix + ".color", lights[i]->getColor());
-		setUniform(prefix + ".constant", lights[i]->getConstant());
-		setUniform(prefix + ".linear", lights[i]->getLinear());
-		setUniform(prefix + ".quadratic", lights[i]->getQuadratic());
-
+	for (int i = 0; i < lights.size(); i++) {
+		setUniform("lights[" + std::to_string(i) + "].position", lights[i]->getPosition());
+		setUniform("lights[" + std::to_string(i) + "].color", lights[i]->getColor());
+		setUniform("lights[" + std::to_string(i) + "].direction", lights[i]->getDirection());
+		setUniform("lights[" + std::to_string(i) + "].constant", lights[i]->getConstant());
+		setUniform("lights[" + std::to_string(i) + "].linear", lights[i]->getLinear());
+		setUniform("lights[" + std::to_string(i) + "].quadratic", lights[i]->getQuadratic());
+		setUniform("lights[" + std::to_string(i) + "].cutOff", lights[i]->getCutOff());
+		setUniform("lights[" + std::to_string(i) + "].type", (int)lights[i]->getType());
+		setUniform("lights[" + std::to_string(i) + "].active", lights[i]->isActive());
 	}
-	
+	glUseProgram(0);
 }
 
 
