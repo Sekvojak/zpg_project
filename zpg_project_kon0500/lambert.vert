@@ -10,7 +10,8 @@ out vec3 worldPos;
 out vec3 worldNorm;            
 
 void main() {
-    worldPos = vec3(modelMatrix * vec4(position, 1.0)); 
+    vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+    worldPos = worldPosition.xyz / worldPosition.w;
     
     mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
     worldNorm = normalize(normalMatrix * normal);
