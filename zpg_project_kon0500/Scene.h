@@ -8,7 +8,7 @@ class Scene
 {
 private:
 	std::vector<DrawableObject*> objects;
-	LightManager* lightManager;
+	LightManager* lightManager;		
 public:
 	~Scene();
 	void addObject(DrawableObject* object);

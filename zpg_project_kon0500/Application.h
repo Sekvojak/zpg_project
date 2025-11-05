@@ -16,6 +16,7 @@ public:
 	void createShaders();
 	void run();
 	void handleInput();
+	void setupScenes();
 private:
 	GLFWwindow* window = nullptr;
 	ShaderManager shaderManager;

@@ -69,7 +69,7 @@ vec3 calcPointLight(Light light, vec3 normal, vec3 viewDir, vec3 fragPos, vec3 o
 }
 
 vec3 calcDirectionalLight(Light light, vec3 normal, vec3 viewDir, vec3 objColor) {
-    vec3 lightDir = normalize(-light.direction); // ?
+    vec3 lightDir = normalize(-light.direction); // smer k svetlu
 
     // difuzna zlozka
     float diff = max(dot(normal, lightDir), 0.0);

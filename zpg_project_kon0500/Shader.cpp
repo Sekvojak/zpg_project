@@ -17,7 +17,6 @@ void Shader::createShader(GLenum type, const char* source) {
 	shaderId = glCreateShader(type);
 	glShaderSource(shaderId, 1, &source, nullptr);
 
-
 	glCompileShader(shaderId);
 
 	GLint success;
