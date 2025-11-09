@@ -5,7 +5,7 @@
 #include "AbstractTransformation.h"
 #include "Light.h"
 #include "Material.h"
-
+#include "Texture.h"
 
 // AbstractTransformation premenovat na TransformComponent?
 
@@ -20,6 +20,7 @@ public:
     void linkLight(Light* light) { linkedLight = light; }
     Light* getLinkedLight() const { return linkedLight; }
     void setMaterial(const Material& m) { material = m; }
+    void setTexture(Texture* tex);
 
 private:
     Model* model;

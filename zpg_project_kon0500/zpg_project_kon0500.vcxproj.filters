@@ -57,6 +57,12 @@
     <ClCompile Include="LightManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -131,12 +137,18 @@
     <ClInclude Include="Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skycube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambert.frag">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="lambert.vert">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="constant.vert">
@@ -154,7 +166,10 @@
     <None Include="blinn.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="blinn.vert">
+    <None Include="skybox.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="skybox.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

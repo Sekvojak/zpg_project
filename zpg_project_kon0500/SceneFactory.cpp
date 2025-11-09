@@ -7,6 +7,7 @@
 #include "TransformDynamicRotate.h"
 #include "TransformRandomTranslate.h"
 #include "TransformRotate.h"
+#include <array>
 
 
 #include "Models/tree.h"
@@ -121,7 +122,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	Model* bushModel = new Model(std::vector<float>(bushes, bushes + sizeof(bushes) / sizeof(float)), 6, 3, 3);
 	bushModel->setupMesh();
 	
-	Model* plainModel = new Model(std::vector<float>(plain, plain + sizeof(plain) / sizeof(float)), 6, 3, 3);
+	Model* plainModel = new Model(std::vector<float>(plain, plain + sizeof(plain) / sizeof(float)), 8, 3, 3, 2);
 	plainModel->setupMesh();
 
 	size_t sphereSize = sizeof(sphere) / sizeof(float);
@@ -136,9 +137,8 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	// svetlo
 
 	auto* lightManager = new LightManager();
-
-	// auto* sunLight = new Light(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f), 1.0f, 0.009f, 0.0032f);
-	// lightManager->addLight(sunLight);
+	auto* sunLight = new Light(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f), 1.0f, 0.002f, 0.0009f);
+	lightManager->addLight(sunLight);
 
 	scene->setLightManager(lightManager);
 
@@ -149,10 +149,28 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 
 	auto* shaderConstant = shaderManager->get("constant");
 
+	// skybox
+	auto* shaderSky = shaderManager->clone("skybox");
+	std::array<std::string, 6> faces = {
+		"Assets/skybox2/px.png",
+		"Assets/skybox2/nx.png",
+		"Assets/skybox2/py.png",
+		"Assets/skybox2/ny.png",
+		"Assets/skybox2/pz.png",
+		"Assets/skybox2/nz.png"
+	};
+
+	auto* skybox = new Skybox(shaderSky, faces);
+	scene->setSkybox(skybox);
+
 	// zem
 	auto* planeTransform = new TransformScale(glm::vec3(50.0f));
 	auto* planeObj = new DrawableObject(plainModel, shaderLambert, planeTransform);
+	
+	Texture* grassTexture = new Texture("grass.png");
+	
 	planeObj->setColor(glm::vec3(0.41f, 0.65f, 0.17f)); // zelená tráva
+	planeObj->setTexture(grassTexture);
 	scene->addObject(planeObj);
 
 	// slnko
@@ -179,7 +197,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 		transform->addChild(new TransformRandomTranslate(glm::vec3(x, y, z)));
 		
 
-		// malá gulička (viditeľná)
+		// malá gulička 
 		auto* firefly = new DrawableObject(sphereModel, shaderConstant, transform);
 		firefly->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 		firefly->linkLight(fireflyLight);
@@ -224,22 +242,39 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 		scene->addObject(obj);
 	}
 	
-	// opice
-	for (int i = 0; i < 5; i++)
-	{
-		auto* transform = new TransformationComposite();
 
-		float s = 0.8f + static_cast<float>(rand()) / RAND_MAX * 0.8f;
-		float x = -20.0f + static_cast<float>(rand()) / RAND_MAX * 40.0f;
-		float z = -5.0f + static_cast<float>(rand()) / RAND_MAX * 10.0f;
-		transform->addChild(new TransformScale(glm::vec3(s)));
-		transform->addChild(new TransformTranslate(glm::vec3(x, 0.75f, z)));
-		transform->addChild(new TransformDynamicRotate((5.0f + static_cast<float>(rand()) / RAND_MAX * 15.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 
-		auto* obj = new DrawableObject(suziModel, shaderPhong, transform);
-		obj->setColor(glm::vec3(0.24f, 0.62f, 0.55f));
-		scene->addObject(obj);
-	}
+	Model* fionaModel = new Model("fiona.obj");
+	auto* fionaTex = new Texture("Assets/fiona.png");
+	auto* fionaTr = new TransformationComposite();
+	fionaTr->addChild(new TransformScale(glm::vec3(0.9f)));
+	fionaTr->addChild(new TransformTranslate(glm::vec3(-10.0f, 0.0f, -10.0f)));
+
+	auto* fiona = new DrawableObject(fionaModel, shaderPhong, fionaTr);
+	fiona->setTexture(fionaTex);
+	scene->addObject(fiona);
+
+
+	Model* shrekModel = new Model("shrek.obj");
+	auto* shrekTex = new Texture("Assets/shrek.png");
+	auto* shrekTr = new TransformationComposite();
+	shrekTr->addChild(new TransformScale(glm::vec3(0.9f)));
+	shrekTr->addChild(new TransformTranslate(glm::vec3(-6.0f, 0.0f, -10.0f)));
+
+	auto* shrek = new DrawableObject(shrekModel, shaderPhong, shrekTr);
+	shrek->setTexture(shrekTex);
+	scene->addObject(shrek);
+
+	Model* toiletModel = new Model("toiled.obj");
+	auto* toiletTex = new Texture("Assets/toiled.jpg");
+	auto* toiletTr = new TransformationComposite();
+	toiletTr->addChild(new TransformScale(glm::vec3(0.9f)));
+	toiletTr->addChild(new TransformTranslate(glm::vec3(-8.0f, 0.0f, -10.0f)));
+
+	auto* toilet = new DrawableObject(toiletModel, shaderLambert, toiletTr);
+	toilet->setTexture(toiletTex);
+	scene->addObject(toilet);
+
 
 	return scene;
 }
@@ -254,20 +289,33 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
 
 	scene->setLightManager(lightManager);
 
-	size_t sphereSize = sizeof(sphere) / sizeof(float);
-	auto* sphereModel = new Model(std::vector<float>(sphere, sphere + sphereSize), 6, 3, 3);
-	sphereModel->setupMesh();
-
 	auto* shaderConst = shaderManager->clone("constant");
 	auto* shaderLambert = shaderManager->clone("lambert");
 
 	shaderLambert->setLightManager(lightManager);
 
+	// skybox
+	auto* shaderSky = shaderManager->clone("skybox");
+	std::array<std::string, 6> faces = {
+		"Assets/skyboxGalaxy/px.jpg",
+		"Assets/skyboxGalaxy/nx.jpg",
+		"Assets/skyboxGalaxy/py.jpg",
+		"Assets/skyboxGalaxy/ny.jpg",
+		"Assets/skyboxGalaxy/pz.jpg",
+		"Assets/skyboxGalaxy/nz.jpg"
+	};
+
+	auto* skybox = new Skybox(shaderSky, faces);
+	scene->setSkybox(skybox);
+
 
 	// slnko
+	Model* sphereModel = new Model("sphere.obj");
+	Texture* sunTex = new Texture("Assets/sun.jpg");
 	auto* sunTransform = new TransformScale(glm::vec3(0.9f));
 	auto* sun = new DrawableObject(sphereModel, shaderConst, sunTransform);
-	sun->setColor(glm::vec3(1.0f, 1.0f, 0.7f));
+	sun->setTexture(sunTex);
+	// sun->setColor(glm::vec3(1.0f, 1.0f, 0.7f));
 	scene->addObject(sun);
 
 	// zem
@@ -277,8 +325,10 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
 	earthOrbit->addChild(new TransformDynamicRotate(30.0f, glm::vec3(0, 1, 0))); // rotácia okolo osi
 	earthOrbit->addChild(new TransformScale(glm::vec3(0.5f)));
 
+	Texture* earthTex = new Texture("Assets/earth.jpg");
 	auto* earth = new DrawableObject(sphereModel, shaderLambert, earthOrbit);
-	earth->setColor(glm::vec3(0.12f, 0.66f, 0.63f));
+	earth->setTexture(earthTex);
+	// earth->setColor(glm::vec3(0.12f, 0.66f, 0.63f));
 	scene->addObject(earth);
 
 	// mesiac
@@ -291,8 +341,10 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
 	moonWorld->addChild(earthOrbit);   
 	moonWorld->addChild(moonOrbit);    // a potom svoj vlastný orbit
 
+	Texture* moonTex = new Texture("Assets/moon.jpg");
 	auto* moon = new DrawableObject(sphereModel, shaderLambert, moonWorld);
-	moon->setColor(glm::vec3(0.48f, 0.46f, 0.41f));
+	moon->setTexture(moonTex);
+	// moon->setColor(glm::vec3(0.48f, 0.46f, 0.41f));
 	scene->addObject(moon);
 
 	return scene;
@@ -302,20 +354,25 @@ Scene* SceneFactory::createScene5(ShaderManager* shaderManager) {
 	auto* scene = new Scene();
 
 	auto* shaderLambert = shaderManager->clone("lambert");
+	auto* shaderPhong = shaderManager->clone("phong");
 
 	auto* lightManager = new LightManager();
 	scene->setLightManager(lightManager);
 
 	auto* light = new Light(glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	auto* lightAboveFiona = new Light(glm::vec3(-13.0f, 15.0f, -10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+
 	lightManager->addLight(light);
+	lightManager->addLight(lightAboveFiona);
 
 	scene->setLightManager(lightManager);
 	shaderLambert->setLightManager(lightManager);
+	shaderPhong->setLightManager(lightManager);
 
 	
 	Model* formulaModel = new Model("formula1.obj");
 	auto* formulaTransform = new TransformationComposite();
-	formulaTransform->addChild(new TransformScale(glm::vec3(0.5f, 0.5f, 0.5f)));
+	formulaTransform->addChild(new TransformScale(glm::vec3(0.2f, 0.2f, 0.2f)));
 	auto* formula = new DrawableObject(formulaModel, shaderLambert, formulaTransform);
 	formula->setColor(glm::vec3(0.8f, 0.8f, 0.7f));
 	scene->addObject(formula);

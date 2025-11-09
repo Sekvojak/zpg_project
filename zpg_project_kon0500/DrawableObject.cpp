@@ -22,6 +22,18 @@ void DrawableObject::draw() {
 	else {
 		shader->setUniform("modelMatrix", glm::mat4(1.0f)); // jednotková matica
 	}
+
+	if (material.texture) {
+		material.texture->bind(GL_TEXTURE0);               
+		shader->setUniform("hasTexture", 1);     
+		shader->setUniform("texture1", 0);       
+	}
+	else {
+		shader->setUniform("hasTexture", 0);
+	}
+
+
+
 	model->bind();
 	glUseProgram(0);
 }
@@ -36,4 +48,8 @@ DrawableObject::~DrawableObject() {
 
 void DrawableObject::setColor(const glm::vec3& color) {
 	objectColor = color;
+}
+
+void DrawableObject::setTexture(Texture* tex) {
+	material.texture = tex;
 }

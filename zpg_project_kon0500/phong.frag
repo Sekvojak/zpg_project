@@ -2,11 +2,14 @@
 in vec3 worldNorm;
 in vec3 worldPos;    
 
+in vec2 uv;  
+
 out vec4 fragColor;
 
 uniform vec3 viewPosition;
 uniform vec3 objectColor; 
-
+uniform bool hasTexture;
+uniform sampler2D texture1;
 
 struct Light {
     vec3 position;
@@ -123,21 +126,22 @@ void main() {
 
     vec3 result = vec3(0.0);
 
+    vec3 baseColor = hasTexture ? texture(texture1, uv).rgb : objectColor;
 
     for (int i = 0; i < lightCount; i++) {
         if (!lights[i].active) continue;
 
         if (lights[i].type == 0) {
             // POINT
-            result += calcPointLight(lights[i], normal, viewDir, worldPos, objectColor);
+            result += calcPointLight(lights[i], normal, viewDir, worldPos, baseColor);
         } else if (lights[i].type == 1) {
             // DIRECTIONAL
-            result += calcDirectionalLight(lights[i], normal, viewDir, objectColor);
+            result += calcDirectionalLight(lights[i], normal, viewDir, baseColor);
         } else if (lights[i].type == 2) {
             // SPOT
-            result += calcSpotLight(lights[i], normal, viewDir, worldPos, objectColor);
+            result += calcSpotLight(lights[i], normal, viewDir, worldPos, baseColor);
         }
     }
-    vec3 ambient = material.ra * objectColor;
+    vec3 ambient = material.ra * baseColor;
     fragColor = vec4(result + ambient, 1.0);
 }

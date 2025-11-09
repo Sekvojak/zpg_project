@@ -4,7 +4,7 @@
 
 class Model {
 public:
-    Model(const std::vector<float>& vertices, int stride, int positionSize, int normalSize);
+    Model(const std::vector<float>& vertices, int stride, int positionSize, int normalSize, int uvSize = 0);
     Model(const char* name);
     void setupMesh();
     void bind();
@@ -14,5 +14,6 @@ private:
     int stride;
     int positionSize;
     int normalSize;
+    int uvSize;
     std::vector<float> vertices;
 };

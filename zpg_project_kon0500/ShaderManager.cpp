@@ -28,7 +28,7 @@ void ShaderManager::createShaders(Camera* camera) {
 
     Shader vertexBasic(GL_VERTEX_SHADER, vertexShaderBasic);
     Shader fragmentBasic(GL_FRAGMENT_SHADER, fragmentShaderBasic);
-    shaders["basic"] = new ShaderProgram(vertexBasic, fragmentBasic);   // toto by malo byt prazdne new ShaderProgram();
+    shaders["basic"] = new ShaderProgram(vertexBasic, fragmentBasic);  
 
     // ===== CONSTANT SHADER =====
 
@@ -38,7 +38,7 @@ void ShaderManager::createShaders(Camera* camera) {
 
     // ===== LAMBERT SHADER =====
 
-    Shader vertexLambert(GL_VERTEX_SHADER, std::string("lambert.vert"));
+    Shader vertexLambert(GL_VERTEX_SHADER, std::string("phong.vert"));
     Shader fragmentLambert(GL_FRAGMENT_SHADER, std::string("lambert.frag"));
     shaders["lambert"] = new ShaderProgram(vertexLambert, fragmentLambert);
 
@@ -48,9 +48,15 @@ void ShaderManager::createShaders(Camera* camera) {
     shaders["phong"] = new ShaderProgram(vertexPhong, fragmentPhong);
 
     // ==== BLINN - PHONG SHADER ====
-    Shader vertexBlinn(GL_VERTEX_SHADER, std::string("blinn.vert"));
+    Shader vertexBlinn(GL_VERTEX_SHADER, std::string("phong.vert"));
     Shader fragmentBlinn(GL_FRAGMENT_SHADER, std::string("blinn.frag"));
     shaders["blinn"] = new ShaderProgram(vertexBlinn, fragmentBlinn);
+
+
+    Shader vertexSkybox(GL_VERTEX_SHADER, std::string("skybox.vert"));
+    Shader fragmentSkybox(GL_FRAGMENT_SHADER, std::string("skybox.frag"));
+    shaders["skybox"] = new ShaderProgram(vertexSkybox, fragmentSkybox);
+
 
     // ===== PREPOJENIE S KAMEROU =====
     for (auto& pair : shaders) {
@@ -81,9 +87,12 @@ ShaderProgram* ShaderManager::clone(const std::string& name) {
 
     std::string vertPath, fragPath;
     if (name == "constant") { vertPath = "constant.vert"; fragPath = "constant.frag"; }
-    else if (name == "lambert") { vertPath = "lambert.vert"; fragPath = "lambert.frag"; }
+    else if (name == "lambert") { vertPath = "phong.vert"; fragPath = "lambert.frag"; }
     else if (name == "phong") { vertPath = "phong.vert"; fragPath = "phong.frag"; }
-    else if (name == "blinn") { vertPath = "blinn.vert"; fragPath = "blinn.frag"; }
+    else if (name == "blinn") { vertPath = "phong.vert"; fragPath = "blinn.frag"; }
+    else if (name == "skybox") { vertPath = "skybox.vert"; fragPath = "skybox.frag"; }
+
+
     else { return nullptr; }
 
     Shader vertexShader(GL_VERTEX_SHADER, vertPath);

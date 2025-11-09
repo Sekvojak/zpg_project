@@ -1,9 +1,12 @@
 #version 330 core
 in vec3 worldNorm;
 in vec3 worldPos;    
-            
+in vec2 uv;  
+
 out vec4 fragColor;
 uniform vec3 objectColor; 
+uniform bool hasTexture;
+uniform sampler2D texture1;
 
 struct Light {
     vec3 position;
@@ -86,6 +89,9 @@ vec3 calcSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 objColor)
 void main() {
     vec3 normal = normalize(worldNorm);
     vec3 result = vec3(0.0);
+       
+    vec3 baseColor = hasTexture ? texture(texture1, uv).rgb : objectColor;
+
 
     for (int i = 0; i < lightCount; i++)
     {
@@ -93,17 +99,17 @@ void main() {
 
         if (lights[i].type == 0)
         {
-            result += calcPointLight(lights[i], normal, worldPos, objectColor);
+            result += calcPointLight(lights[i], normal, worldPos, baseColor);
         }
         else if (lights[i].type == 1)
         {
-            result += calcDirectionalLight(lights[i], normal, objectColor);
+            result += calcDirectionalLight(lights[i], normal, baseColor);
         }
         else if (lights[i].type == 2)
         {
-            result += calcSpotLight(lights[i], normal, worldPos, objectColor);
+            result += calcSpotLight(lights[i], normal, worldPos, baseColor);
         }
     }
-    vec3 ambient = material.ra * objectColor;
+    vec3 ambient = material.ra * baseColor;
     fragColor = vec4(result + ambient, 1.0);
 }

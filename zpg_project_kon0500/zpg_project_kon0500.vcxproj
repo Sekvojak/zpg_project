@@ -147,6 +147,8 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractTransformation.h" />
@@ -166,6 +168,9 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="Skybox.h" />
+    <ClInclude Include="skycube.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="TransformationComposite.h" />
     <ClInclude Include="TransformDynamicRotate.h" />
     <ClInclude Include="TransformDynamicTranslate.h" />
@@ -176,13 +181,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="blinn.frag" />
-    <None Include="blinn.vert" />
     <None Include="constant.frag" />
     <None Include="constant.vert" />
     <None Include="lambert.frag" />
-    <None Include="lambert.vert" />
     <None Include="phong.frag" />
     <None Include="phong.vert" />
+    <None Include="skybox.frag" />
+    <None Include="skybox.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

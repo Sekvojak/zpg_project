@@ -5,6 +5,8 @@ void Scene::addObject(DrawableObject* object) {
 }
 
 void Scene::draw() {
+	if (skybox) skybox->draw();
+
 	for (auto* object : objects) {
 		object->draw();
 	}

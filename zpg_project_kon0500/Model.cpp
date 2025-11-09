@@ -2,9 +2,10 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 #include <iostream>
+#include "Material.h"
 
-Model::Model(const std::vector<float>& vertices, int stride, int positionSize, int normalSize)
-    : vertices(vertices), VAO(0), VBO(0), stride(stride), positionSize(positionSize), normalSize(normalSize){}
+Model::Model(const std::vector<float>& vertices, int stride, int positionSize, int normalSize, int uvSize)
+    : vertices(vertices), VAO(0), VBO(0), stride(stride), positionSize(positionSize), normalSize(normalSize), uvSize(uvSize) {}
 
 Model::Model(const char* name)
 {
@@ -20,7 +21,6 @@ Model::Model(const char* name)
     if (!err.empty()) std::cerr << "Err: " << err << std::endl;
     if (!ret) throw std::runtime_error("Failed to load OBJ file!");
 
-    // Vyčistíme a naplníme členský vektor
     vertices.clear();
 
     for (const auto& shape : shapes) {
@@ -57,15 +57,19 @@ Model::Model(const char* name)
     stride = 8;          // 3 pozícia + 3 normála + 2 UV
     positionSize = 3;
     normalSize = 3;
+    uvSize = 2;
 
     std::cout << "Loaded model " << name
         << " | vertices: " << attrib.vertices.size() / 3
-        << " | normals: " << attrib.normals.size() / 3 << std::endl;
+        << " | normals: " << attrib.normals.size() / 3 
+        << " | UV count: " << attrib.texcoords.size() / 2 << std::endl;
 
 
-    setupMesh(); 
+    setupMesh();  
 }
 
+// svetlo aktualizovat iba ked sa zmeni ??
+// svetluska specialny drawable object ktory napriklad dedi svetlo
 
 void Model::setupMesh() {
     glGenVertexArrays(1, &VAO);
@@ -81,6 +85,13 @@ void Model::setupMesh() {
     
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, normalSize, GL_FLOAT, GL_TRUE, stride * sizeof(float), (void*)(positionSize * sizeof(float)));
+
+    // UV 
+    if (uvSize > 0) {
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, uvSize, GL_FLOAT, GL_FALSE, stride * sizeof(float),
+            (void*)((positionSize + normalSize) * sizeof(float)));
+    }
 
     glBindVertexArray(0);
 
