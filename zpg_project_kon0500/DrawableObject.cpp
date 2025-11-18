@@ -11,17 +11,23 @@ DrawableObject::DrawableObject(Model* model, ShaderProgram* shader, AbstractTran
 
 void DrawableObject::draw() {
 	shader->use();
+
+	shader->setUniform("isSelected", selected ? 1 : 0);
 	shader->setUniform("objectColor", objectColor);
 	shader->setUniform("material.ra", material.ra);
 	shader->setUniform("material.rd", material.rd);
 	shader->setUniform("material.rs", material.rs);
 	shader->setUniform("material.h", material.h);
+
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+
 	if (transformation) {
-		shader->setUniform("modelMatrix", transformation->getMatrix());
+		modelMatrix = transformation->getMatrix();
 	}
-	else {
-		shader->setUniform("modelMatrix", glm::mat4(1.0f)); // jednotková matica
-	}
+
+	modelMatrix = glm::translate(modelMatrix, moveOffset);
+
+	shader->setUniform("modelMatrix", modelMatrix);
 
 	if (material.texture) {
 		material.texture->bind(GL_TEXTURE0);               

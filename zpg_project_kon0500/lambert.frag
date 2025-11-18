@@ -8,6 +8,8 @@ uniform vec3 objectColor;
 uniform bool hasTexture;
 uniform sampler2D texture1;
 
+uniform int isSelected;
+
 struct Light {
     vec3 position;
     vec3 color;
@@ -111,5 +113,12 @@ void main() {
         }
     }
     vec3 ambient = material.ra * baseColor;
-    fragColor = vec4(result + ambient, 1.0);
+
+    vec3 finalColor = result + ambient;
+    if (isSelected == 1) {
+        finalColor = mix(finalColor, vec3(1.0, 0.2, 0.2), 0.25);
+        finalColor *= 1.2;
+    }
+
+    fragColor = vec4(finalColor, 1.0);
 }

@@ -65,7 +65,7 @@ void ShaderProgram::setLightManager(LightManager* lm) {
 void ShaderProgram::onLightsChanged(const std::vector<Light*>& lights) {
 	if (!shaderProgram) return;
 	use();
-	std::cout << "Updating lights: " << lights.size() << " for shader " << shaderProgram << "\n";
+	// std::cout << "Updating lights: " << lights.size() << " for shader " << shaderProgram << "\n";
 	setUniform("lightCount", (int)lights.size());
 	for (int i = 0; i < lights.size(); i++) {
 		setUniform("lights[" + std::to_string(i) + "].position", lights[i]->getPosition());

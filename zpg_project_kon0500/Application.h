@@ -8,18 +8,22 @@
 #include "Camera.h"
 #include "CameraController.h"
 #include "ShaderManager.h"
+#include "ModelManager.h"
 
 class Application
 {
 public:
 	void initialization();
 	void createShaders();
+	void createModels();
 	void run();
 	void handleInput();
+	void handleLeftClick();
 	void setupScenes();
 private:
 	GLFWwindow* window = nullptr;
 	ShaderManager shaderManager;
+	ModelManager modelManager;
 	SceneManager sceneManager;
 	Camera* camera;
 	CameraController* cameraController;

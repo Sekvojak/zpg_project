@@ -57,5 +57,8 @@ public:
 	void attachObserver(ICameraObserver* observer);
 	void detachObserver(ICameraObserver* observer);
 
+	int getWidth() const { return windowWidth; }
+	int getHeight() const { return windowHeight; }
+
 };
 

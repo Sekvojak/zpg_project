@@ -11,7 +11,7 @@ class CameraController : public ICameraObserver {
 private:
 	Camera* camera;
 	
-	glm::vec3 eye; // aktualna pozicia kamery pri otacani mysou napr
+	glm::vec3 eye; // aktualna pozicia kamery pri otacani mysou
 	glm::vec3 front; // smer pohladu
 	glm::vec3 up; // vektor hore
 

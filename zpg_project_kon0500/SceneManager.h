@@ -13,5 +13,6 @@ public:
 	void setActiveScene(int index);
 	void drawActiveScene();
 	void updateActiveScene(float deltaTime);
+	Scene* getActiveScene();
 };
 

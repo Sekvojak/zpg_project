@@ -4,6 +4,7 @@
 void Application::initialization() {
     if (!glfwInit()) exit(-1);
 
+    glfwWindowHint(GLFW_STENCIL_BITS, 8);
     window = glfwCreateWindow(800, 600, "ZPG", nullptr, nullptr);
     if (!window) { glfwTerminate(); exit(-1); }
 
@@ -33,6 +34,43 @@ void Application::initialization() {
 }
 
 void Application::handleInput() {   
+
+    // object deleting
+    if (glfwGetKey(window, GLFW_KEY_DELETE) == GLFW_PRESS) {
+        Scene* s = sceneManager.getActiveScene();
+        s->deleteSelected();
+    }
+
+    // tree planting
+    static bool tWasPressedLastFrame = false;
+    int tState = glfwGetKey(window, GLFW_KEY_T);
+
+    if (tState == GLFW_PRESS && !tWasPressedLastFrame) {
+        Scene* s = sceneManager.getActiveScene();
+        if (s) {
+            s->plantTree(&modelManager, &shaderManager);
+        }
+    }
+
+    tWasPressedLastFrame = (tState == GLFW_PRESS);
+
+    // object movement
+    Scene* s = sceneManager.getActiveScene();
+    float speed = 0.2f;  
+
+    if (s != nullptr) {
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+            s->moveSelected(0.0f, -speed);   
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+            s->moveSelected(0.0f, speed);    
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+            s->moveSelected(-speed, 0.0f);   
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            s->moveSelected(speed, 0.0f);    
+    }
+
+
+    // scenes
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
         sceneManager.setActiveScene(0);
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
@@ -49,12 +87,16 @@ void Application::createShaders() {
     shaderManager.createShaders(camera);
 }
 
+void Application::createModels() {
+    modelManager.createModels();
+}
+
 void Application::setupScenes() {
-    Scene* s1 = SceneFactory::createScene1(&shaderManager);
-    Scene* s2 = SceneFactory::createScene2(&shaderManager);
-    Scene* s3 = SceneFactory::createScene3(&shaderManager);
-    Scene* s4 = SceneFactory::createScene4(&shaderManager);
-    Scene* s5 = SceneFactory::createScene5(&shaderManager);
+    Scene* s1 = SceneFactory::createScene1(&shaderManager, &modelManager);
+    Scene* s2 = SceneFactory::createScene2(&shaderManager, &modelManager);
+    Scene* s3 = SceneFactory::createScene3(&shaderManager, &modelManager);
+    Scene* s4 = SceneFactory::createScene4(&shaderManager, &modelManager);
+    Scene* s5 = SceneFactory::createScene5(&shaderManager, &modelManager);
 
 
 
@@ -72,6 +114,25 @@ void Application::setupScenes() {
     sceneManager.addScene(s5);
 }
 
+void Application::handleLeftClick() {
+    static bool leftMousePressedLastFrame = false;
+
+    int leftState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+
+    if (leftState == GLFW_PRESS && !leftMousePressedLastFrame) {
+        double mouseX, mouseY;
+        glfwGetCursorPos(window, &mouseX, &mouseY);
+
+        Scene* activeScene = sceneManager.getActiveScene();
+        if (activeScene) {
+            activeScene->onClick(mouseX, mouseY, camera);
+        }
+    }
+
+    leftMousePressedLastFrame = (leftState == GLFW_PRESS);
+}
+
+
 void Application::run() {
     glEnable(GL_DEPTH_TEST);
 
@@ -84,10 +145,9 @@ void Application::run() {
         float dt = static_cast<float>(now - lastTime);
         lastTime = now;
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
         handleInput();
-
         cameraController->update(window, dt);
         cameraController->processMouse(window);
         cameraController->checkResize(window);
@@ -95,6 +155,8 @@ void Application::run() {
 
         sceneManager.updateActiveScene(dt);
         sceneManager.drawActiveScene();
+
+        handleLeftClick();
 
         glfwSwapBuffers(window);
         glfwPollEvents();

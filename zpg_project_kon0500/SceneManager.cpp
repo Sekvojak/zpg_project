@@ -30,3 +30,7 @@ SceneManager::~SceneManager() {
 		delete scene;
 	}
 }
+
+Scene* SceneManager::getActiveScene() {
+	return scenes[activeSceneIndex];
+}

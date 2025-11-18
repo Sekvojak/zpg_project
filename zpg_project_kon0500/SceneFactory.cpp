@@ -10,20 +10,12 @@
 #include <array>
 
 
-#include "Models/tree.h"
-#include "Models/bushes.h"
-#include "Models/gift.h"
-#include "Models/plain.h"
-#include "Models/suzi_flat.h"
-#include "Models/suzi_smooth.h"
-#include "Models/sphere.h"
-
 #include <cstdlib>   // rand()
 #include <ctime>     // time()
 
 #include <glm/glm.hpp>
 
-Scene* SceneFactory::createScene1(ShaderManager* shaderManager) {
+Scene* SceneFactory::createScene1(ShaderManager* shaderManager, ModelManager* modelManager) {
 	// vertexy trojuholníka
 	std::vector<float> triangle = {
 		-0.5f, -0.5f, 0.0f,
@@ -49,7 +41,7 @@ Scene* SceneFactory::createScene1(ShaderManager* shaderManager) {
 }
 
 
-Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
+Scene* SceneFactory::createScene2(ShaderManager* shaderManager, ModelManager* modelManager) {
 	Scene* scene = new Scene();
 
 	auto* lightManager = new LightManager();
@@ -68,9 +60,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 
 	scene->setLightManager(lightManager);
 
-	size_t sphereSize = sizeof(sphere) / sizeof(float);
-	Model* sphereModel = new Model(std::vector<float>(sphere, sphere + sphereSize), 6, 3, 3);
-	sphereModel->setupMesh();
+	Model* sphereModel = modelManager->get("sphere");
 
 	float scale = 0.2f;
 	float translation = 2.5f;
@@ -111,27 +101,40 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager) {
 	return scene;
 }
 
-Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
+DrawableObject* SceneFactory::createTree(Model* model, ShaderProgram* shaderProgram, const glm::vec3& position) {
+	auto* transform = new TransformationComposite();
+
+	float s = 0.2f + static_cast<float>(rand()) / RAND_MAX * 0.2f;
+
+	transform->addChild(new TransformTranslate(position));
+	transform->addChild(new TransformScale(glm::vec3(s)));
+
+	auto* obj = new DrawableObject(model, shaderProgram, transform);
+
+	obj->setColor(glm::vec3(
+		0.1f + 0.3f * (rand() / float(RAND_MAX)),
+		0.4f + 0.4f * (rand() / float(RAND_MAX)),
+		0.1f + 0.2f * (rand() / float(RAND_MAX))
+	));
+
+	return obj;
+}
+
+
+Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* modelManager) {
 
 	srand((unsigned)time(nullptr));
 	auto* scene = new Scene();
 
-	Model* treeModel = new Model(std::vector<float>(tree, tree + sizeof(tree) / sizeof(float)), 6, 3, 3);
-	treeModel->setupMesh();
+	Model* treeModel = modelManager->get("tree");
 
-	Model* bushModel = new Model(std::vector<float>(bushes, bushes + sizeof(bushes) / sizeof(float)), 6, 3, 3);
-	bushModel->setupMesh();
+	Model* bushModel = modelManager->get("bush");
 	
-	Model* plainModel = new Model(std::vector<float>(plain, plain + sizeof(plain) / sizeof(float)), 8, 3, 3, 2);
-	plainModel->setupMesh();
+	Model* plainModel = modelManager->get("plain");
 
-	size_t sphereSize = sizeof(sphere) / sizeof(float);
-	Model* sphereModel = new Model(std::vector<float>(sphere, sphere + sphereSize), 6, 3, 3);
-	sphereModel->setupMesh();
+	Model* sphereModel = modelManager->get("sphere");
 
-	size_t suziSize = sizeof(suziSmooth) / sizeof(float);
-	Model* suziModel = new Model(std::vector<float>(suziSmooth, suziSmooth + suziSize), 6, 3, 3);
-	suziModel->setupMesh();
+	Model* suziModel = modelManager->get("suzi");
 	// float randomFloat = MIN + static_cast<float>(rand()) / RAND_MAX * (MAX - MIN);
 
 	// svetlo
@@ -183,9 +186,9 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	int fireflyCount = 10;
 	for (int i = 0; i < fireflyCount; i++) {
 		// náhodná pozícia v priestore lesa
-		float x = -300.0f + static_cast<float>(rand()) / RAND_MAX * 600.0f;
+		float x = -400.0f + static_cast<float>(rand()) / RAND_MAX * 800.0f;
 		float y = 24.0f + static_cast<float>(rand()) / RAND_MAX * 24.0f;
-		float z = -250.0f + static_cast<float>(rand()) / RAND_MAX * 500.0f;
+		float z = -350.0f + static_cast<float>(rand()) / RAND_MAX * 700.0f;
 
 		auto* fireflyLight = new Light(glm::vec3(x, y, z), glm::vec3(1.0f, 0.9f, 0.6f));
 		fireflyLight->setAttenuation(1.0f, 0.9f, 1.5f); // slabší dosah
@@ -211,20 +214,14 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 		auto* transform = new TransformationComposite();
 
 		float s = 0.2f + static_cast<float>(rand()) / RAND_MAX * 0.2f; // random scale
-		float x = -50.0f + static_cast<float>(rand()) / RAND_MAX * 100.0f; 
-		float z = -25.0f + static_cast<float>(rand()) / RAND_MAX * 50.0f; 
+		float x = -15.0f + static_cast<float>(rand()) / RAND_MAX * 30.0f; 
+		float z = -15.0f + static_cast<float>(rand()) / RAND_MAX * 30.0f; 
+		glm::vec3 pos(x, 0, z);
 
-		transform->addChild(new TransformScale(glm::vec3(s)));
-		transform->addChild(new TransformTranslate(glm::vec3(x, 0.0f, z)));
 
-		auto* obj = new DrawableObject(treeModel, shaderLambert, transform);
-		obj->setColor(glm::vec3(
-			0.1f + 0.3f * (rand() / float(RAND_MAX)),
-			0.4f + 0.4f * (rand() / float(RAND_MAX)),
-			0.1f + 0.2f * (rand() / float(RAND_MAX))  
-		));
-
-		scene->addObject(obj);
+		scene->addObject(
+			SceneFactory::createTree(treeModel, shaderLambert, pos)
+		);
 	}
 	// bushe
 	for (int i = 0; i < 75; i++)
@@ -244,7 +241,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	
 
 
-	Model* fionaModel = new Model("fiona.obj");
+	Model* fionaModel = modelManager->get("fiona");
 	auto* fionaTex = new Texture("Assets/fiona.png");
 	auto* fionaTr = new TransformationComposite();
 	fionaTr->addChild(new TransformScale(glm::vec3(0.9f)));
@@ -255,7 +252,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	scene->addObject(fiona);
 
 
-	Model* shrekModel = new Model("shrek.obj");
+	Model* shrekModel = modelManager->get("shrek");
 	auto* shrekTex = new Texture("Assets/shrek.png");
 	auto* shrekTr = new TransformationComposite();
 	shrekTr->addChild(new TransformScale(glm::vec3(0.9f)));
@@ -265,7 +262,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 	shrek->setTexture(shrekTex);
 	scene->addObject(shrek);
 
-	Model* toiletModel = new Model("toiled.obj");
+	Model* toiletModel = modelManager->get("toiled");
 	auto* toiletTex = new Texture("Assets/toiled.jpg");
 	auto* toiletTr = new TransformationComposite();
 	toiletTr->addChild(new TransformScale(glm::vec3(0.9f)));
@@ -280,7 +277,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager) {
 }
 
 
-Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
+Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* modelManager) {
 	auto* scene = new Scene();
 
 	auto* lightManager = new LightManager();
@@ -310,7 +307,7 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
 
 
 	// slnko
-	Model* sphereModel = new Model("sphere.obj");
+	Model* sphereModel = modelManager->get("sphereWithUV");
 	Texture* sunTex = new Texture("Assets/sun.jpg");
 	auto* sunTransform = new TransformScale(glm::vec3(0.9f));
 	auto* sun = new DrawableObject(sphereModel, shaderConst, sunTransform);
@@ -350,7 +347,7 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager) {
 	return scene;
 }
 
-Scene* SceneFactory::createScene5(ShaderManager* shaderManager) {
+Scene* SceneFactory::createScene5(ShaderManager* shaderManager, ModelManager* modelManager) {
 	auto* scene = new Scene();
 
 	auto* shaderLambert = shaderManager->clone("lambert");
@@ -370,14 +367,14 @@ Scene* SceneFactory::createScene5(ShaderManager* shaderManager) {
 	shaderPhong->setLightManager(lightManager);
 
 	
-	Model* formulaModel = new Model("formula1.obj");
+	Model* formulaModel = modelManager->get("formula");
 	auto* formulaTransform = new TransformationComposite();
 	formulaTransform->addChild(new TransformScale(glm::vec3(0.2f, 0.2f, 0.2f)));
 	auto* formula = new DrawableObject(formulaModel, shaderLambert, formulaTransform);
 	formula->setColor(glm::vec3(0.8f, 0.8f, 0.7f));
 	scene->addObject(formula);
 
-	Model* hamburgerModel = new Model("Hamburger_01.obj");
+	Model* hamburgerModel = modelManager->get("hamburger");
 	auto* hamburgerTransform = new TransformationComposite();
 	hamburgerTransform->addChild(new TransformScale(glm::vec3(0.5f, 0.5f, 0.5f)));
 	hamburgerTransform->addChild(new TransformTranslate(glm::vec3(30.f, 0.0f, 30.0f)));
