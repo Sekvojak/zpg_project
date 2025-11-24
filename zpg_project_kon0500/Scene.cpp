@@ -8,6 +8,14 @@ void Scene::addObject(DrawableObject* object) {
 	objects.push_back(object);
 }
 
+void Scene::removeObject(DrawableObject* object) {
+	auto it = std::find(objects.begin(), objects.end(), object);
+	if (it != objects.end()) {
+		delete* it;         
+		objects.erase(it);   
+	}
+}
+
 void Scene::draw() {
 	if (skybox) {
         glDisable(GL_STENCIL_TEST);
@@ -151,4 +159,14 @@ void Scene::moveSelected(float dx, float dy) {
 			return;
 		}
 	}
+}
+
+DrawableObject* Scene::getObjectByID(int id) {
+	for (auto* obj : objects) {
+		if (obj->getID() == id)
+		{
+			return obj;
+		}
+	}
+	return nullptr;
 }

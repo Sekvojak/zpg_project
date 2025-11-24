@@ -10,6 +10,8 @@
 #include "ShaderManager.h"
 #include "ModelManager.h"
 
+#include "ShootingRange.h"
+
 class Application
 {
 public:
@@ -27,5 +29,8 @@ private:
 	SceneManager sceneManager;
 	Camera* camera;
 	CameraController* cameraController;
+
+	ShootingRange* shooting = nullptr;
+	bool shootingActive = false;
 };
 

@@ -39,4 +39,6 @@ private:
     Material material{};
 
     glm::vec3 moveOffset = glm::vec3(0.0f);
+
+    bool useExtraMatrix = false; // 1b task , prenasobenie w * 20
 };

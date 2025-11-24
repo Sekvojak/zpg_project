@@ -23,6 +23,7 @@ private:
 public:
 	~Scene();
 	void addObject(DrawableObject* object);
+	void removeObject(DrawableObject* object);
 	void draw();
 	void update(float deltaTime); 
 	void setLightManager(LightManager* lm);
@@ -32,5 +33,10 @@ public:
 	void deleteSelected();
 	void plantTree(ModelManager* modelManager, ShaderManager* shaderManager);
 	void moveSelected(float dx, float dz);
+
+	DrawableObject* getObjectByID(int id);
+	int getSelectedObjectID() const { return selectedObjectID; }
+	std::vector<DrawableObject*>& getObjects() { return objects; }
+
 };
 

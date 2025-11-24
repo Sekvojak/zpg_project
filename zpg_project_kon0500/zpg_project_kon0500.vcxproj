@@ -148,6 +148,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="ShootingRange.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
@@ -170,12 +171,14 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="ShootingRange.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="skycube.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TransformationComposite.h" />
     <ClInclude Include="TransformDynamicRotate.h" />
     <ClInclude Include="TransformDynamicTranslate.h" />
+    <ClInclude Include="TransformLinearParametric.h" />
     <ClInclude Include="TransformRandomTranslate.h" />
     <ClInclude Include="TransformRotate.h" />
     <ClInclude Include="TransformScale.h" />

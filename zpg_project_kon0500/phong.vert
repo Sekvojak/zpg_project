@@ -7,12 +7,22 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
       
+uniform float w = 500;
+
+uniform bool useExtraMatrix;
+uniform mat4 extraMatrix;
+
 out vec2 uv;      
 out vec3 worldPos;
 out vec3 worldNorm;            
 
 void main() {
-    vec4 worldPosition = modelMatrix * vec4(position * 200, 200.0);
+    vec4 worldPosition = modelMatrix * vec4(position * w, w);
+
+    if (useExtraMatrix) {
+        worldPosition = extraMatrix * worldPosition;
+    }
+
     worldPos = worldPosition.xyz / worldPosition.w;
     
     mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));

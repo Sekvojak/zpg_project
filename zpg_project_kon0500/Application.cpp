@@ -81,7 +81,28 @@ void Application::handleInput() {
         sceneManager.setActiveScene(3);
     if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
         sceneManager.setActiveScene(4);
-}
+    if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS) {
+        sceneManager.setActiveScene(5);
+
+        if (!shootingActive)
+        {
+            Scene* s6 = sceneManager.getActiveScene();
+
+            Model* model = modelManager.get("shrek");
+            ShaderProgram* shader = shaderManager.clone("phong");
+            shader->setLightManager(s6->getLightManager());
+
+            shooting = new ShootingRange(s6, model, shader);
+            shooting->spawnTarget();
+            shooting->spawnTarget();
+            shooting->spawnTarget();
+
+            shootingActive = true;
+
+        }
+    }
+   
+    }
 
 void Application::createShaders() {
     shaderManager.createShaders(camera);
@@ -97,6 +118,8 @@ void Application::setupScenes() {
     Scene* s3 = SceneFactory::createScene3(&shaderManager, &modelManager);
     Scene* s4 = SceneFactory::createScene4(&shaderManager, &modelManager);
     Scene* s5 = SceneFactory::createScene5(&shaderManager, &modelManager);
+    Scene* s6 = SceneFactory::createScene6(&shaderManager, &modelManager);
+
 
 
 
@@ -105,6 +128,8 @@ void Application::setupScenes() {
     s3->getLightManager()->addLight(cameraController->getFlashlight());
     s4->getLightManager()->addLight(cameraController->getFlashlight());
     s5->getLightManager()->addLight(cameraController->getFlashlight());
+    s6->getLightManager()->addLight(cameraController->getFlashlight());
+
 
 
     sceneManager.addScene(s1);
@@ -112,6 +137,8 @@ void Application::setupScenes() {
     sceneManager.addScene(s3);
     sceneManager.addScene(s4);
     sceneManager.addScene(s5);
+    sceneManager.addScene(s6);
+
 }
 
 void Application::handleLeftClick() {
@@ -126,8 +153,15 @@ void Application::handleLeftClick() {
         Scene* activeScene = sceneManager.getActiveScene();
         if (activeScene) {
             activeScene->onClick(mouseX, mouseY, camera);
+
+            if (shootingActive && shooting)
+            {
+                int id = activeScene->getSelectedObjectID();
+                shooting->onClick(id);
+            }
+
+            }
         }
-    }
 
     leftMousePressedLastFrame = (leftState == GLFW_PRESS);
 }
@@ -135,7 +169,6 @@ void Application::handleLeftClick() {
 
 void Application::run() {
     glEnable(GL_DEPTH_TEST);
-
     setupScenes();
 
     double lastTime = glfwGetTime();
@@ -148,9 +181,23 @@ void Application::run() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
         handleInput();
-        cameraController->update(window, dt);
+        int active = sceneManager.getActiveSceneIndex();
+
+        if (active != 5) {
+            cameraController->update(window, dt);
+        }
+        else {
+            camera->setEyeFrontUp(
+                glm::vec3(0.0f, 1.0f, 0.0f),   // pozícia kamery
+                glm::vec3(0.0f, 0.0f, -1.0f),  // smer
+                glm::vec3(0.0f, 1.0f, 0.0f)
+            );
+        }
         cameraController->processMouse(window);
         cameraController->checkResize(window);
+
+        if (shootingActive && shooting)
+            shooting->update(dt);
 
 
         sceneManager.updateActiveScene(dt);

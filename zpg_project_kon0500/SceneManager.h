@@ -14,5 +14,6 @@ public:
 	void drawActiveScene();
 	void updateActiveScene(float deltaTime);
 	Scene* getActiveScene();
+	int getActiveSceneIndex() const { return activeSceneIndex; }
 };
 

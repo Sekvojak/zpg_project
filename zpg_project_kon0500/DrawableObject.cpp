@@ -29,6 +29,12 @@ void DrawableObject::draw() {
 
 	shader->setUniform("modelMatrix", modelMatrix);
 
+	glm::mat4 extraMatrix = glm::mat4(1.0f);
+	extraMatrix[3][3] = 20.0f;
+	shader->setUniform("useExtraMatrix", useExtraMatrix ? 1 : 0);
+	shader->setUniform("extraMatrix", extraMatrix);
+
+
 	if (material.texture) {
 		material.texture->bind(GL_TEXTURE0);               
 		shader->setUniform("hasTexture", 1);     

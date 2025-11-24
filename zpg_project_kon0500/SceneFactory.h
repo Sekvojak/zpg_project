@@ -23,6 +23,6 @@ public:
 	static Scene* createScene3(ShaderManager* shaderManager, ModelManager* modelManager);
 	static Scene* createScene4(ShaderManager* shaderManager, ModelManager* modelManager);
 	static Scene* createScene5(ShaderManager* shaderManager, ModelManager* modelManager);
-
+	static Scene* createScene6(ShaderManager* shaderManager, ModelManager* modelManager);
 };
 
