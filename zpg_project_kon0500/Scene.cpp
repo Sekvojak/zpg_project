@@ -42,9 +42,11 @@ void Scene::update(float deltaTime) {
 		}
 
 		if (object->getLinkedLight()) {
-			glm::vec3 newPos = object->getTransformation()->getMatrix()[3]; 
-			object->getLinkedLight()->setPosition(glm::vec3(newPos.x, newPos.y, newPos.z));
+			glm::mat4 modelMatrix = object->computeModelMatrix();
+			glm::vec3 newPos = glm::vec3(modelMatrix[3]);
+			object->getLinkedLight()->setPosition(newPos);
 		}
+
 	}
 
 	if (lightManager)

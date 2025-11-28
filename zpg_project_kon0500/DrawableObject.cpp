@@ -19,13 +19,7 @@ void DrawableObject::draw() {
 	shader->setUniform("material.rs", material.rs);
 	shader->setUniform("material.h", material.h);
 
-	glm::mat4 modelMatrix = glm::mat4(1.0f);
-
-	if (transformation) {
-		modelMatrix = transformation->getMatrix();
-	}
-
-	modelMatrix = glm::translate(modelMatrix, moveOffset);
+	glm::mat4 modelMatrix = computeModelMatrix();
 
 	shader->setUniform("modelMatrix", modelMatrix);
 
@@ -64,4 +58,14 @@ void DrawableObject::setColor(const glm::vec3& color) {
 
 void DrawableObject::setTexture(Texture* tex) {
 	material.texture = tex;
+}
+
+glm::mat4 DrawableObject::computeModelMatrix() const
+{
+	glm::mat4 m = glm::mat4(1.0f);
+	if (transformation)
+		m = transformation->getMatrix();
+
+	m = glm::translate(m, moveOffset);
+	return m;
 }

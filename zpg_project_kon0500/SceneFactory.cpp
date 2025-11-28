@@ -136,13 +136,14 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* mo
 	Model* sphereModel = modelManager->get("sphere");
 
 	Model* suziModel = modelManager->get("suzi");
+
 	// float randomFloat = MIN + static_cast<float>(rand()) / RAND_MAX * (MAX - MIN);
 
 	// svetlo
 
 	auto* lightManager = new LightManager();
 	auto* sunLight = new Light(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f), 1.0f, 0.002f, 0.0009f);
-	lightManager->addLight(sunLight);
+	// lightManager->addLight(sunLight);
 
 	scene->setLightManager(lightManager);
 
@@ -307,8 +308,12 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	scene->setSkybox(skybox);
 
 
+	Model* loginModel = modelManager->get("login");
+
+
 	// slnko
 	Model* sphereModel = modelManager->get("sphereWithUV");
+
 	Texture* sunTex = new Texture("Assets/sun.jpg");
 	auto* sunTransform = new TransformationComposite();
 	sunTransform->addChild(new TransformScale(glm::vec3(3.0f)));
@@ -368,11 +373,14 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	moonWorld->addChild(new TransformTranslate(glm::vec3(12.0f, 0.0f, 0.0f))); // vzdialenosť Zeme 
 	moonWorld->addChild(moonOrbit);    // vlastny orbit
 
+	auto* loginObj = new DrawableObject(loginModel, shaderLambert, moonWorld);
+	scene->addObject(loginObj);
+
 	Texture* moonTex = new Texture("Assets/moon.jpg");
 	auto* moon = new DrawableObject(sphereModel, shaderLambert, moonWorld);
 	moon->setTexture(moonTex);
 	// moon->setColor(glm::vec3(0.48f, 0.46f, 0.41f));
-	scene->addObject(moon);
+	// scene->addObject(moon);
 
 
 	auto* marsOrbit = new TransformationComposite();

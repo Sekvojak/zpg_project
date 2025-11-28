@@ -28,6 +28,9 @@ public:
     void setSelected(bool value) { selected = value; }
 
     void addOffset(const glm::vec3& delta) { moveOffset += delta; }
+
+    glm::mat4 computeModelMatrix() const;
+
 private:
     int objectID = 0;
     bool selected = false;

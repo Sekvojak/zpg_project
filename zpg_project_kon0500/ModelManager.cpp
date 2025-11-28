@@ -78,4 +78,7 @@ void ModelManager::createModels() {
     loadFromObj(
         "hamburger", "Hamburger_01.obj"
     );
+    loadFromObj(
+        "login", "login.obj"
+    );
 }

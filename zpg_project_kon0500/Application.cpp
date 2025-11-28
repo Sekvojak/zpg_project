@@ -102,7 +102,7 @@ void Application::handleInput() {
         }
     }
    
-    }
+}
 
 void Application::createShaders() {
     shaderManager.createShaders(camera);
