@@ -20,7 +20,7 @@ public:
     ShaderProgram(const Shader& vertex, const Shader& fragment);
     ~ShaderProgram();
 
-    void setCamera(Camera* cam); // odkaz na kameru, ktorá shader pozoruje
+    void setCamera(Camera* cam); 
     void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& eye) override;
 
     void setLightManager(LightManager* lm);

@@ -176,6 +176,9 @@
     <ClInclude Include="skycube.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TransformationComposite.h" />
+    <ClInclude Include="TransformBezier.h" />
+    <ClInclude Include="TransformBezierSpline.h" />
+    <ClInclude Include="TransformBezierSplineLoop.h" />
     <ClInclude Include="TransformDynamicRotate.h" />
     <ClInclude Include="TransformDynamicTranslate.h" />
     <ClInclude Include="TransformLinearParametric.h" />

@@ -161,6 +161,15 @@
     <ClInclude Include="ShootingRange.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TransformBezier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformBezierSpline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformBezierSplineLoop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lambert.frag">

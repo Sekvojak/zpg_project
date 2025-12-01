@@ -15,7 +15,7 @@ ShaderProgram::ShaderProgram(const Shader& vertex, const Shader& fragment) {
 	fragment.attachTo(shaderProgram);
 	glLinkProgram(shaderProgram);
 
-	// kontrola po linkovani shader programu
+	// linkage check
 	GLint status;
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &status);
 	if (status == GL_FALSE)
@@ -71,6 +71,7 @@ void ShaderProgram::onLightsChanged(const std::vector<Light*>& lights) {
 		setUniform("lights[" + std::to_string(i) + "].position", lights[i]->getPosition());
 		setUniform("lights[" + std::to_string(i) + "].color", lights[i]->getColor());
 		setUniform("lights[" + std::to_string(i) + "].direction", lights[i]->getDirection());
+		setUniform("lights[" + std::to_string(i) + "].intensity", lights[i]->getIntensity());
 		setUniform("lights[" + std::to_string(i) + "].constant", lights[i]->getConstant());
 		setUniform("lights[" + std::to_string(i) + "].linear", lights[i]->getLinear());
 		setUniform("lights[" + std::to_string(i) + "].quadratic", lights[i]->getQuadratic());

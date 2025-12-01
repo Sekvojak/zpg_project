@@ -9,21 +9,20 @@
 class Camera
 {
 private:
-	// pozicia a orientacia kamery
-	glm::vec3 eye; // pozicia kamery
-	glm::vec3 front; // smer kam sa kamera pozera
+	// position and orientation
+	glm::vec3 eye; 
+	glm::vec3 front; 
 	glm::vec3 up;
 
-	// parametre projekcie
+	// projection
 	float fieldOfView;
-	float zNear; // najbližšia rovina (zNear = 0.1)
-	float zFar;  // najvzdialenejšia rovina (zFar = 100)
+	float zNear; 
+	float zFar;  
 
 	// viewport;
 	int windowWidth;
 	int windowHeight;
 
-	// Matice
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 
@@ -37,14 +36,11 @@ private:
 public:
 	Camera(glm::vec3 eye, glm::vec3 up, float fieldOfView, int windowWidth, int windowHeight);
 
-	// viewport
 	void setViewport(int width, int height); 
 	 
-	// projekcia
-	void setProjection(float fieldOfView); // zmení zorné pole a obnoví projekciu
+	void setProjection(float fieldOfView); 
 
-	// orientacia
-	void setEyeFrontUp(glm::vec3 eye_, glm::vec3 front_, glm::vec3 up_); // nastaví polohu a orientáciu kamery
+	void setEyeFrontUp(glm::vec3 eye_, glm::vec3 front_, glm::vec3 up_); 
 
 	const glm::mat4 getViewMatrix() const {
 		return viewMatrix;

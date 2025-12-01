@@ -11,9 +11,9 @@ class CameraController : public ICameraObserver {
 private:
 	Camera* camera;
 	
-	glm::vec3 eye; // aktualna pozicia kamery pri otacani mysou
-	glm::vec3 front; // smer pohladu
-	glm::vec3 up; // vektor hore
+	glm::vec3 eye; // current camera position
+	glm::vec3 front; 
+	glm::vec3 up; 
 
 	float yaw;
 	float pitch;
@@ -29,10 +29,10 @@ private:
 public:
 	CameraController(Camera* cam);
 
-	// cita vstup, meni poziciu kamery
+	// change of camera position
 	void update(GLFWwindow* window, float dt);
 
-	// spracuje mys
+	// rotation of camera
 	void processMouse(GLFWwindow* window);
 
 	void onCameraChanged(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& eye);

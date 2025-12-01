@@ -15,20 +15,25 @@ private:
 	glm::vec3 lightColor{ 1.0f };
 	glm::vec3 direction{ 0.0f, -1.0f, 0.0f };
 
+	float intensity{ 1.0f };
+
 	float constant{ 1.0f };
 	float linear{ 0.0f };
 	float quadratic{ 0.0f };
 
 	float cutOff{ 0.7f };
 	LightType type{ LightType::Point };
-	bool active{ true }; // svetlo zapnute / vypnute
+	bool active{ true }; 
 
 public:
 	Light(glm::vec3 pos, glm::vec3 color);
 	Light(glm::vec3 pos, glm::vec3 color, float c, float l, float q);
 	Light(glm::vec3 vector, glm::vec3 color, LightType t);
 	Light(glm::vec3 pos, glm::vec3 color, LightType t,
-		float c, float l, float q, float cut);	// kompletny konstruktor pre baterku
+		float c, float l, float q, float cut);	// flashlight constructor
+
+	void setIntensity(float i) { intensity = i; }
+	float getIntensity() const { return intensity; }
 
 	void setPosition(const glm::vec3& p);
 	void setColor(const glm::vec3& c);

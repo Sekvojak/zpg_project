@@ -58,7 +58,6 @@ void ShaderManager::createShaders(Camera* camera) {
     shaders["skybox"] = new ShaderProgram(vertexSkybox, fragmentSkybox);
 
 
-    // ===== PREPOJENIE S KAMEROU =====
     for (auto& pair : shaders) {
         pair.second->setCamera(camera);
     }

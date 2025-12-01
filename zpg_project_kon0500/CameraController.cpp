@@ -6,10 +6,10 @@ CameraController::CameraController(Camera* cam) {
 	eye = glm::vec3(0.0f, 0.0f, 3.0f);
 	front = glm::vec3(0.0f, 0.0f, -1.0f);
 	up = glm::vec3(0.0f, 1.0f, 0.0f);
-	yaw = -90.0f;  // otacanie dolava / doprava -zacina -90 aby bol front do -z
-	pitch = 0.0f;  // hore/dole uhol
-	speed = 2.0f;   // rychlsot WASD
-	sensitivity = 0.19f;   // rychlsot mysi
+	yaw = -90.0f;  // front -z = -90
+	pitch = 0.0f;  // up/down angle
+	speed = 3.0f;   // speed of camera
+	sensitivity = 0.19f;  
 	rightMouseHeld = false;
 
 	camera->attachObserver(this);

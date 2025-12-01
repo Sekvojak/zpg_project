@@ -13,7 +13,7 @@ private:
 	float changeInterval;
 	float timeSinceChange;
 public:
-	TransformRandomTranslate(const glm::vec3& start = glm::vec3(0.0f), float interval = 5.0f) { // interval - ako casto menime smer
+	TransformRandomTranslate(const glm::vec3& start = glm::vec3(0.0f), float interval = 5.0f) { 
 		position = start;
 		velocity = randomVelocity();
 		changeInterval = interval;

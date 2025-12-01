@@ -12,6 +12,10 @@
 
 #include "ShootingRange.h"
 
+#include <vector>
+#include "TransformBezierSpline.h"
+#include "DrawableObject.h"
+
 class Application
 {
 public:
@@ -32,5 +36,11 @@ private:
 
 	ShootingRange* shooting = nullptr;
 	bool shootingActive = false;
+
+	bool bezierMode = false;
+	std::vector<glm::vec3> bezierPoints;
+	float bezierSpeed = 0.1f;
+	std::vector<DrawableObject*> bezierMarkers;
+
 };
 

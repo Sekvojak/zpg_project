@@ -8,6 +8,10 @@
 #include "TransformRandomTranslate.h"
 #include "TransformRotate.h"
 #include "TransformLinearParametric.h"
+#include "TransformBezier.h"
+#include "TransformBezierSpline.h"
+#include "TransformBezierSplineLoop.h"
+
 #include <array>
 
 
@@ -17,7 +21,6 @@
 #include <glm/glm.hpp>
 
 Scene* SceneFactory::createScene1(ShaderManager* shaderManager, ModelManager* modelManager) {
-	// vertexy trojuholníka
 	std::vector<float> triangle = {
 		-0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f,
@@ -66,7 +69,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager, ModelManager* mo
 	float scale = 0.2f;
 	float translation = 2.5f;
 
-	// -x gula
+	// -x sphere
 	auto* t1 = new TransformationComposite();
 	t1->addChild(new TransformScale(glm::vec3(scale)));
 	t1->addChild(new TransformTranslate(glm::vec3(-translation, 0.0f, 0.0f)));
@@ -74,7 +77,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager, ModelManager* mo
 	o1->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o1);
 
-	// x gula
+	// x sphere
 	auto* t2 = new TransformationComposite();
 	t2->addChild(new TransformScale(glm::vec3(scale)));
 	t2->addChild(new TransformTranslate(glm::vec3(translation, 0.0f, 0.0f)));
@@ -82,7 +85,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager, ModelManager* mo
 	o2->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o2);
 
-	// y gula
+	// y sphere
 	auto* t3 = new TransformationComposite();
 	t3->addChild(new TransformScale(glm::vec3(scale)));
 	t3->addChild(new TransformTranslate(glm::vec3(0.0f, translation, 0.0f)));
@@ -90,7 +93,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager, ModelManager* mo
 	o3->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o3);
 
-	// -y gula
+	// -y sphere
 	auto* t4 = new TransformationComposite();
 	t4->addChild(new TransformScale(glm::vec3(scale)));
 	t4->addChild(new TransformTranslate(glm::vec3(0.0f, -translation, 0.0f)));
@@ -139,46 +142,50 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* mo
 
 	// float randomFloat = MIN + static_cast<float>(rand()) / RAND_MAX * (MAX - MIN);
 
-	// svetlo
+	// light
 
 	auto* lightManager = new LightManager();
 	auto* sunLight = new Light(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(1.0f), 1.0f, 0.002f, 0.0009f);
-	// lightManager->addLight(sunLight);
+	lightManager->addLight(sunLight);
 
 	scene->setLightManager(lightManager);
 
 	auto* shaderLambert = shaderManager->clone("lambert");
 	auto* shaderPhong = shaderManager->clone("phong");
+	auto* shaderBlinn = shaderManager->clone("blinn");
+
 	shaderLambert->setLightManager(lightManager);
 	shaderPhong->setLightManager(lightManager);
+	shaderBlinn->setLightManager(lightManager);
+
 
 	auto* shaderConstant = shaderManager->get("constant");
 
 	// skybox
 	auto* shaderSky = shaderManager->clone("skybox");
 	std::array<std::string, 6> faces = {
-		"Assets/skybox2/px.png",
-		"Assets/skybox2/nx.png",
-		"Assets/skybox2/py.png",
-		"Assets/skybox2/ny.png",
-		"Assets/skybox2/pz.png",
-		"Assets/skybox2/nz.png"
+		"Assets/aurora/px.png",
+		"Assets/aurora/nx.png",
+		"Assets/aurora/py.png",
+		"Assets/aurora/ny.png",
+		"Assets/aurora/pz.png",
+		"Assets/aurora/nz.png"
 	};
 
 	auto* skybox = new Skybox(shaderSky, faces);
 	scene->setSkybox(skybox);
 
-	// zem
+	// grass
 	auto* planeTransform = new TransformScale(glm::vec3(50.0f));
 	auto* planeObj = new DrawableObject(plainModel, shaderLambert, planeTransform);
 	
 	Texture* grassTexture = new Texture("Assets/grass.png");
 	
-	planeObj->setColor(glm::vec3(0.41f, 0.65f, 0.17f)); // zelená tráva
+	planeObj->setColor(glm::vec3(0.41f, 0.65f, 0.17f)); 
 	planeObj->setTexture(grassTexture);
 	scene->addObject(planeObj);
 
-	// slnko
+	// sun
 	auto* sunTransform = new TransformationComposite(); 
 	sunTransform->addChild(new TransformTranslate(glm::vec3(0.0f, 10.0f, 0.0f)));
 	auto* sunObj = new DrawableObject(sphereModel, shaderManager->get("constant"), sunTransform);
@@ -187,22 +194,21 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* mo
 
 	int fireflyCount = 10;
 	for (int i = 0; i < fireflyCount; i++) {
-		// náhodná pozícia v priestore lesa
+		// random position
 		float x = -400.0f + static_cast<float>(rand()) / RAND_MAX * 800.0f;
 		float y = 24.0f + static_cast<float>(rand()) / RAND_MAX * 24.0f;
 		float z = -350.0f + static_cast<float>(rand()) / RAND_MAX * 700.0f;
 
 		auto* fireflyLight = new Light(glm::vec3(x, y, z), glm::vec3(1.0f, 0.9f, 0.6f));
-		fireflyLight->setAttenuation(1.0f, 0.9f, 1.5f); // slabší dosah
+		fireflyLight->setAttenuation(1.0f, 0.9f, 1.5f); 
 		lightManager->addLight(fireflyLight);
 
-		// pohybová transformácia
+		// translate
 		auto* transform = new TransformationComposite();
 		transform->addChild(new TransformScale(glm::vec3(0.015f)));
 		transform->addChild(new TransformRandomTranslate(glm::vec3(x, y, z)));
 		
 
-		// malá gulička 
 		auto* firefly = new DrawableObject(sphereModel, shaderConstant, transform);
 		firefly->setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 		firefly->linkLight(fireflyLight);
@@ -210,7 +216,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* mo
 	}
 
 
-	// stromy
+	// trees
 	for (int i = 0; i < 75; i++)
 	{	
 		auto* transform = new TransformationComposite();
@@ -225,7 +231,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* mo
 			SceneFactory::createTree(treeModel, shaderLambert, pos)
 		);
 	}
-	// bushe
+	// bushes
 	for (int i = 0; i < 75; i++)
 	{
 		auto* transform = new TransformationComposite();
@@ -236,7 +242,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* mo
 		transform->addChild(new TransformScale(glm::vec3(s)));
 		transform->addChild(new TransformTranslate(glm::vec3(x, 0.0f, z)));
 
-		auto* obj = new DrawableObject(bushModel, shaderLambert, transform);
+		auto* obj = new DrawableObject(bushModel, shaderBlinn, transform);
 		obj->setColor(glm::vec3(0.07f, 0.23f, 0.06f));
 		scene->addObject(obj);
 	}
@@ -311,7 +317,7 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	Model* loginModel = modelManager->get("login");
 
 
-	// slnko
+	// sun
 	Model* sphereModel = modelManager->get("sphereWithUV");
 
 	Texture* sunTex = new Texture("Assets/sun.jpg");
@@ -324,22 +330,22 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	scene->addObject(sun);
 
 
-	// merkur
+	// mercury
 	auto* mercurOrbit = new TransformationComposite();
-	mercurOrbit->addChild(new TransformDynamicRotate(6.0f, glm::vec3(0, 1, 0))); // okolo slnka
-	mercurOrbit->addChild(new TransformTranslate(glm::vec3(6.0f, 0, 0))); // vzdialenost od Slnka
-	mercurOrbit->addChild(new TransformDynamicRotate(2.0f, glm::vec3(0, 1, 0))); // rotacia okolo vlastnej osy
+	mercurOrbit->addChild(new TransformDynamicRotate(6.0f, glm::vec3(0, 1, 0))); // sun orbit
+	mercurOrbit->addChild(new TransformTranslate(glm::vec3(6.0f, 0, 0))); 
+	mercurOrbit->addChild(new TransformDynamicRotate(2.0f, glm::vec3(0, 1, 0))); // self orbit
 	mercurOrbit->addChild(new TransformScale(glm::vec3(0.2f)));
 	Texture* mercuryTex = new Texture("Assets/mercury.jpg");
 	auto* mercury = new DrawableObject(sphereModel, shaderLambert, mercurOrbit);
 	mercury->setTexture(mercuryTex);
 	scene->addObject(mercury);
 
-	// venusa
+	// venus
 	auto* venusOrbit = new TransformationComposite();
-	venusOrbit->addChild(new TransformDynamicRotate(3.0f, glm::vec3(0, 1, 0))); // okolo slnka
-	venusOrbit->addChild(new TransformTranslate(glm::vec3(9.0f, 0, 0))); // vzdialenost od Slnka
-	venusOrbit->addChild(new TransformDynamicRotate(-5.0f, glm::vec3(0, 1, 0))); // opacna rotacia
+	venusOrbit->addChild(new TransformDynamicRotate(3.0f, glm::vec3(0, 1, 0))); // sun orbit
+	venusOrbit->addChild(new TransformTranslate(glm::vec3(9.0f, 0, 0)));
+	venusOrbit->addChild(new TransformDynamicRotate(-5.0f, glm::vec3(0, 1, 0)));  // self orbit
 	venusOrbit->addChild(new TransformScale(glm::vec3(0.45f)));
 	Texture* venusTex = new Texture("Assets/venus.jpg");
 	auto* venus = new DrawableObject(sphereModel, shaderLambert, venusOrbit);
@@ -347,12 +353,12 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	scene->addObject(venus);
 
 
-	// zem
+	// earth
 	auto* earthOrbit = new TransformationComposite();
-	earthOrbit->addChild(new TransformDynamicRotate(2.0f, glm::vec3(0, 1, 0)));  // orbit okolo Slnka
-	earthOrbit->addChild(new TransformTranslate(glm::vec3(12.0f, 0, 0)));         // vzdialenosť od Slnka
-	earthOrbit->addChild(new TransformRotate(glm::radians(23.5f), glm::vec3(0, 0, 1)));		 // naklon
-	earthOrbit->addChild(new TransformDynamicRotate(30.0f, glm::vec3(0, 1, 0))); // rotácia okolo osi
+	earthOrbit->addChild(new TransformDynamicRotate(2.0f, glm::vec3(0, 1, 0)));  // sun orbit
+	earthOrbit->addChild(new TransformTranslate(glm::vec3(12.0f, 0, 0)));         
+	earthOrbit->addChild(new TransformRotate(glm::radians(23.5f), glm::vec3(0, 0, 1)));	
+	earthOrbit->addChild(new TransformDynamicRotate(30.0f, glm::vec3(0, 1, 0))); // self orbit
 	earthOrbit->addChild(new TransformScale(glm::vec3(0.5f)));
 
 	Texture* earthTex = new Texture("Assets/earth.jpg");
@@ -361,32 +367,39 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	// earth->setColor(glm::vec3(0.12f, 0.66f, 0.63f));
 	scene->addObject(earth);
 
-	// mesiac
+	// moon
 	auto* moonOrbit = new TransformationComposite();
-	moonOrbit->addChild(new TransformDynamicRotate(10.0f, glm::vec3(0, 1, 0)));  // orbit okolo Zeme
-	moonOrbit->addChild(new TransformTranslate(glm::vec3(0.7f, 0, 0)));          // vzdialenosť od Zeme
-	moonOrbit->addChild(new TransformRotate(glm::radians(5.14f), glm::vec3(0, 0, 1))); // naklon mesiaca
+	moonOrbit->addChild(new TransformDynamicRotate(10.0f, glm::vec3(0, 1, 0)));  // earth orbit
+	moonOrbit->addChild(new TransformTranslate(glm::vec3(0.7f, 0, 0)));          
+	moonOrbit->addChild(new TransformRotate(glm::radians(5.14f), glm::vec3(0, 0, 1))); 
 	moonOrbit->addChild(new TransformScale(glm::vec3(0.13f)));
 
 	auto* moonWorld = new TransformationComposite();
-	moonWorld->addChild(new TransformDynamicRotate(2.0f, glm::vec3(0, 1, 0)));  // orbit Zeme okolo Slnka
-	moonWorld->addChild(new TransformTranslate(glm::vec3(12.0f, 0.0f, 0.0f))); // vzdialenosť Zeme 
-	moonWorld->addChild(moonOrbit);    // vlastny orbit
+	moonWorld->addChild(new TransformDynamicRotate(2.0f, glm::vec3(0, 1, 0)));  // same as earth
+	moonWorld->addChild(new TransformTranslate(glm::vec3(12.0f, 0.0f, 0.0f))); 
+	moonWorld->addChild(moonOrbit);    // own orbit
 
-	auto* loginObj = new DrawableObject(loginModel, shaderLambert, moonWorld);
+	auto* loginT = new TransformationComposite();
+	loginT->addChild(new TransformDynamicRotate(2.0f, glm::vec3(0, 1, 0)));
+	loginT->addChild(new TransformTranslate(glm::vec3(12.0f, 0.0f, 0.0f)));
+	loginT->addChild(new TransformDynamicRotate(-10.0f, glm::vec3(0, 1, 0))); 
+	loginT->addChild(new TransformTranslate(glm::vec3(0.7f, 0, 0)));          
+
+
+	auto* loginObj = new DrawableObject(loginModel, shaderLambert, loginT);
 	scene->addObject(loginObj);
 
 	Texture* moonTex = new Texture("Assets/moon.jpg");
 	auto* moon = new DrawableObject(sphereModel, shaderLambert, moonWorld);
 	moon->setTexture(moonTex);
 	// moon->setColor(glm::vec3(0.48f, 0.46f, 0.41f));
-	// scene->addObject(moon);
+	scene->addObject(moon);
 
-
+	// mars
 	auto* marsOrbit = new TransformationComposite();
-	marsOrbit->addChild(new TransformDynamicRotate(1.0f, glm::vec3(0, 1, 0))); // orbit okolo Slnka
-	marsOrbit->addChild(new TransformTranslate(glm::vec3(18.0f, 0, 0))); // vzdialenosť od Slnka
-	marsOrbit->addChild(new TransformDynamicRotate(24.0f, glm::vec3(0, 1, 0)));  // rotácia okolo osi
+	marsOrbit->addChild(new TransformDynamicRotate(1.0f, glm::vec3(0, 1, 0))); // sun orbit
+	marsOrbit->addChild(new TransformTranslate(glm::vec3(18.0f, 0, 0)));
+	marsOrbit->addChild(new TransformDynamicRotate(24.0f, glm::vec3(0, 1, 0)));  // self orbit
 	marsOrbit->addChild(new TransformScale(glm::vec3(0.27f)));
 
 	Texture* marsTex = new Texture("Assets/mars.jpg");
@@ -394,11 +407,11 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	mars->setTexture(marsTex);
 	scene->addObject(mars);
 
-	// jupiter
+	// jupyter
 	auto* jupiterOrbit = new TransformationComposite();
-	jupiterOrbit->addChild(new TransformDynamicRotate(0.5f, glm::vec3(0, 1, 0))); // orbit okolo Slnka
-	jupiterOrbit->addChild(new TransformTranslate(glm::vec3(30.0f, 0, 0))); // vzdialenosť od Slnka
-	jupiterOrbit->addChild(new TransformDynamicRotate(50.0f, glm::vec3(0, 1, 0)));  // rotácia okolo osi
+	jupiterOrbit->addChild(new TransformDynamicRotate(0.5f, glm::vec3(0, 1, 0))); // sun orbit
+	jupiterOrbit->addChild(new TransformTranslate(glm::vec3(30.0f, 0, 0))); 
+	jupiterOrbit->addChild(new TransformDynamicRotate(50.0f, glm::vec3(0, 1, 0)));  // self orbit
 	jupiterOrbit->addChild(new TransformScale(glm::vec3(1.4f)));
 
 	Texture* jupiterTex = new Texture("Assets/jupiter.jpg");
@@ -409,11 +422,11 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 
 	// saturn
 	auto* saturnOrbit = new TransformationComposite();
-	saturnOrbit->addChild(new TransformDynamicRotate(0.35f, glm::vec3(0, 1, 0)));   // orbit okolo Slnka
-	saturnOrbit->addChild(new TransformTranslate(glm::vec3(42.0f, 0, 0)));          // vzdialenosť od Slnka
-	saturnOrbit->addChild(new TransformRotate(glm::radians(26.7f), glm::vec3(0, 0, 1))); // naklon
-	saturnOrbit->addChild(new TransformDynamicRotate(40.0f, glm::vec3(0, 1, 0)));   // rotácia okolo osi
-	saturnOrbit->addChild(new TransformScale(glm::vec3(1.2f)));                     // veľkosť
+	saturnOrbit->addChild(new TransformDynamicRotate(0.35f, glm::vec3(0, 1, 0)));   // sun orbit
+	saturnOrbit->addChild(new TransformTranslate(glm::vec3(42.0f, 0, 0)));          
+	saturnOrbit->addChild(new TransformRotate(glm::radians(26.7f), glm::vec3(0, 0, 1))); 
+	saturnOrbit->addChild(new TransformDynamicRotate(40.0f, glm::vec3(0, 1, 0)));   // self orbit
+	saturnOrbit->addChild(new TransformScale(glm::vec3(1.2f)));                   
 
 	Texture* saturnTex = new Texture("Assets/saturn.jpg");
 	auto* saturn = new DrawableObject(sphereModel, shaderLambert, saturnOrbit);
@@ -421,13 +434,13 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	scene->addObject(saturn);
 
 
-	// uran
+	// uranus
 	auto* uranusOrbit = new TransformationComposite();
-	uranusOrbit->addChild(new TransformDynamicRotate(0.25f, glm::vec3(0, 1, 0)));    // orbit okolo Slnka
-	uranusOrbit->addChild(new TransformTranslate(glm::vec3(54.0f, 0, 0)));           // vzdialenosť od Slnka
-	uranusOrbit->addChild(new TransformRotate(glm::radians(98.0f), glm::vec3(1, 0, 0))); // os "na boku"
-	uranusOrbit->addChild(new TransformDynamicRotate(30.0f, glm::vec3(0, 1, 0)));    // rotácia okolo osi
-	uranusOrbit->addChild(new TransformScale(glm::vec3(0.6f)));                      // veľkosť
+	uranusOrbit->addChild(new TransformDynamicRotate(0.25f, glm::vec3(0, 1, 0)));    // sun orbit
+	uranusOrbit->addChild(new TransformTranslate(glm::vec3(54.0f, 0, 0)));           
+	uranusOrbit->addChild(new TransformRotate(glm::radians(98.0f), glm::vec3(1, 0, 0))); 
+	uranusOrbit->addChild(new TransformDynamicRotate(30.0f, glm::vec3(0, 1, 0)));    // self orbit
+	uranusOrbit->addChild(new TransformScale(glm::vec3(0.6f)));                     
 
 	Texture* uranusTex = new Texture("Assets/uranus.jpg");
 	auto* uranus = new DrawableObject(sphereModel, shaderLambert, uranusOrbit);
@@ -435,18 +448,17 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	scene->addObject(uranus);
 	
 	
-	// neptun
+	// neptune
 	auto* neptuneOrbit = new TransformationComposite();
-	neptuneOrbit->addChild(new TransformDynamicRotate(0.2f, glm::vec3(0, 1, 0)));   // orbit okolo Slnka
-	neptuneOrbit->addChild(new TransformTranslate(glm::vec3(66.0f, 0, 0)));         // vzdialenosť od Slnka
-	neptuneOrbit->addChild(new TransformDynamicRotate(28.0f, glm::vec3(0, 1, 0)));  // rotácia okolo osi
-	neptuneOrbit->addChild(new TransformScale(glm::vec3(0.58f)));                   // veľkosť
+	neptuneOrbit->addChild(new TransformDynamicRotate(0.2f, glm::vec3(0, 1, 0)));   // sun orbit
+	neptuneOrbit->addChild(new TransformTranslate(glm::vec3(66.0f, 0, 0)));         
+	neptuneOrbit->addChild(new TransformDynamicRotate(28.0f, glm::vec3(0, 1, 0)));  // self orbit
+	neptuneOrbit->addChild(new TransformScale(glm::vec3(0.58f)));                   
 
 	Texture* neptuneTex = new Texture("Assets/neptune.jpg");
 	auto* neptune = new DrawableObject(sphereModel, shaderLambert, neptuneOrbit);
 	neptune->setTexture(neptuneTex);
 	scene->addObject(neptune);
-	// vediet zmenit rychlost smer..
 
 	return scene;
 }
@@ -457,14 +469,40 @@ Scene* SceneFactory::createScene5(ShaderManager* shaderManager, ModelManager* mo
 	auto* shaderLambert = shaderManager->clone("lambert");
 	auto* shaderPhong = shaderManager->clone("phong");
 
+
+	// skybox
+	auto* shaderSky = shaderManager->clone("skybox");
+	std::array<std::string, 6> faces = {
+		"Assets/skybox2/px.png",
+		"Assets/skybox2/nx.png",
+		"Assets/skybox2/py.png",
+		"Assets/skybox2/ny.png",
+		"Assets/skybox2/pz.png",
+		"Assets/skybox2/nz.png"
+	};
+
+
+	auto* skybox = new Skybox(shaderSky, faces);
+	scene->setSkybox(skybox);
+
+
 	auto* lightManager = new LightManager();
 	scene->setLightManager(lightManager);
 
 	auto* light = new Light(glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	auto* lightAboveFiona = new Light(glm::vec3(-13.0f, 15.0f, -10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
+	Model* plainModel = modelManager->get("plain");
+	auto* planeTransform = new TransformScale(glm::vec3(50.0f));
+	auto* planeObj = new DrawableObject(plainModel, shaderLambert, planeTransform);
+
+	Texture* grassTexture = new Texture("Assets/grass.png");
+
+	planeObj->setTexture(grassTexture);
+	scene->addObject(planeObj);
+
 	lightManager->addLight(light);
-	lightManager->addLight(lightAboveFiona);
+	// lightManager->addLight(lightAboveFiona);
 
 	scene->setLightManager(lightManager);
 	shaderLambert->setLightManager(lightManager);
@@ -473,9 +511,41 @@ Scene* SceneFactory::createScene5(ShaderManager* shaderManager, ModelManager* mo
 	
 	Model* formulaModel = modelManager->get("formula");
 	auto* formulaTransform = new TransformationComposite();
+
+	std::vector<glm::vec3> track;
+
+	float radius = 30.0f;
+	for (int i = 0; i < 12; i++) {
+		float angle = glm::radians(i * 30.0f);
+		float x = radius * cos(angle);
+		float z = radius * sin(angle);
+		track.push_back(glm::vec3(x, 0.0f, z));
+	}
+	track.push_back(track[0]);
+
+
+	while ((track.size() - 1) % 3 != 0) {
+		track.insert(track.end() - 1, track[track.size() - 2]);
+	}
+
+	auto* spline = new TransformBezierSplineLoop(track, 0.1f);
+	formulaTransform->addChildAtBeginning(spline);
+
+
+	formulaTransform->addChild(
+		new TransformRotate(glm::radians(+90.0f), glm::vec3(0, 1, 0))
+	);
 	formulaTransform->addChild(new TransformScale(glm::vec3(0.2f, 0.2f, 0.2f)));
 	auto* formula = new DrawableObject(formulaModel, shaderLambert, formulaTransform);
 	formula->setColor(glm::vec3(0.8f, 0.8f, 0.7f));
+
+	Material formulaMat;
+	formulaMat.ra = 0.1f;   
+	formulaMat.rd = 0.7f;   
+	formulaMat.rs = 0.8f;   
+	formulaMat.h = 64.0f;  
+
+	formula->setMaterial(formulaMat);
 	scene->addObject(formula);
 
 	Model* hamburgerModel = modelManager->get("hamburger");
@@ -485,7 +555,7 @@ Scene* SceneFactory::createScene5(ShaderManager* shaderManager, ModelManager* mo
 
 	auto* hamburger = new DrawableObject(hamburgerModel, shaderLambert, hamburgerTransform);
 	hamburger->setColor(glm::vec3(0.8f, 0.8f, 0.7f));
-	scene->addObject(hamburger);
+	// scene->addObject(hamburger);
 
 	return scene;
 }
@@ -520,7 +590,7 @@ Scene* SceneFactory::createScene6(ShaderManager* shaderManager, ModelManager* mo
 
 	Texture* grassTexture = new Texture("Assets/grass.png");
 
-	planeObj->setColor(glm::vec3(0.41f, 0.65f, 0.17f)); // zelená tráva
+	planeObj->setColor(glm::vec3(0.41f, 0.65f, 0.17f)); 
 	planeObj->setTexture(grassTexture);
 	scene->addObject(planeObj);
 

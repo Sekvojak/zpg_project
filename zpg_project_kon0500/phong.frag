@@ -24,6 +24,8 @@ struct Light {
     float cutOff;
     int type;
     bool active;
+
+    float intensity;
 };
 
 struct Material {
@@ -56,10 +58,8 @@ vec3 calcPointLight(Light light, vec3 normal, vec3 viewDir, vec3 fragPos, vec3 o
     float distance = length(light.position - fragPos);
     float att = attenuation(distance, light.constant, light.linear, light.quadratic);
 
-    // difuzna zlozka
     float diff = max(dot(normal, lightDir), 0.0);
 
-    // spec zlozka
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.h);
 
@@ -67,8 +67,8 @@ vec3 calcPointLight(Light light, vec3 normal, vec3 viewDir, vec3 fragPos, vec3 o
         spec = 0.0;
     }
 
-    vec3 diffuse = material.rd * diff * light.color * objColor;
-    vec3 specular = material.rs * spec * light.color ;
+    vec3 diffuse = material.rd * diff * light.color * objColor * light.intensity;
+    vec3 specular = material.rs * spec * light.color * light.intensity;
 
     return (diffuse + specular) * att;
 }
@@ -76,10 +76,8 @@ vec3 calcPointLight(Light light, vec3 normal, vec3 viewDir, vec3 fragPos, vec3 o
 vec3 calcDirectionalLight(Light light, vec3 normal, vec3 viewDir, vec3 objColor) {
     vec3 lightDir = normalize(-light.direction); // smer k svetlu
 
-    // difuzna zlozka
     float diff = max(dot(normal, lightDir), 0.0);
 
-    // spec zlozka
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 
@@ -87,36 +85,32 @@ vec3 calcDirectionalLight(Light light, vec3 normal, vec3 viewDir, vec3 objColor)
         spec = 0.0;
     }
 
-    vec3 diffuse = material.rd * diff * light.color * objColor;
-    vec3 specular = material.rs * spec * light.color * objColor; 
+    vec3 diffuse = material.rd * diff * light.color * objColor * light.intensity;
+    vec3 specular = material.rs * spec * light.color * light.intensity; 
 
     return  (diffuse + specular);
 }
 
 vec3 calcSpotLight(Light light, vec3 normal, vec3 viewDir, vec3 fragPos, vec3 objColor) {
-    vec3 lightToFrag = normalize(fragPos - light.position);    // smer ku fragmentu
+    vec3 lightToFrag = normalize(fragPos - light.position);    
 
-    float LF = dot(lightToFrag, light.direction); // cos uhla medzi 
+    float LF = dot(lightToFrag, light.direction); 
 
-    // intenzita
     float intens = ( LF - light.cutOff )/( 1 - light.cutOff );
     intens = clamp(intens, 0.0, 1.0);
 
-    // attenuation
     float distance = length(light.position - fragPos);
 
     float att = attenuation(distance, light.constant, light.linear, light.quadratic);
 
-    // difuzna zlozka
     vec3 lightDir = normalize(light.position - fragPos);
     float diff = max(dot(normal, lightDir), 0.0);
 
-    // spec zlozka
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 
-    vec3 diffuse = material.rd * diff * light.color * objColor;
-    vec3 specular = material.rs * spec * light.color * objColor;
+    vec3 diffuse = material.rd * diff * light.color * objColor * light.intensity;
+    vec3 specular = material.rs * spec * light.color * light.intensity;
 
     return (diffuse + specular) * att * intens;
 

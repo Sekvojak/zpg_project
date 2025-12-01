@@ -20,6 +20,8 @@ struct Light {
     float cutOff;
     int type;
     bool active;
+
+    float intensity;
 };
 
 struct Material { 
@@ -53,7 +55,7 @@ vec3 calcPointLight(Light light, vec3 normal, vec3 fragPos, vec3 objColor)
 
     float diff = max(dot(normal, lightDir), 0.0);
 
-    vec3 diffuse = material.rd * diff * light.color * objColor;
+    vec3 diffuse = material.rd * diff * light.color * objColor * light.intensity;
 
     return (diffuse * att);
 }
@@ -64,7 +66,7 @@ vec3 calcDirectionalLight(Light light, vec3 normal, vec3 objColor)
 
     float diff = max(dot(normal, lightDir), 0.0);
 
-    vec3 diffuse = material.rd * diff * light.color * objColor;
+    vec3 diffuse = material.rd * diff * light.color * objColor * light.intensity;
 
     return diffuse;
 }
@@ -82,7 +84,7 @@ vec3 calcSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 objColor)
 
     float diff = max(dot(normal, lightDir), 0.0);
 
-    vec3 diffuse = material.rd * diff * light.color * objColor;
+    vec3 diffuse = material.rd * diff * light.color * objColor * light.intensity;
 
     return (diffuse * att * intens);
 }

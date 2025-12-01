@@ -7,14 +7,13 @@
 #include "Material.h"
 #include "Texture.h"
 
-// AbstractTransformation premenovat na TransformComponent?
-
 class DrawableObject {
 public:
     ~DrawableObject();
     DrawableObject(Model* model, ShaderProgram* shader, AbstractTransformation* transformation = nullptr);
     void draw();
     AbstractTransformation* getTransformation();
+    void setTransformation(AbstractTransformation* t) { transformation = t; }
     void setColor(const glm::vec3& color);
 
     void linkLight(Light* light) { linkedLight = light; }
@@ -43,5 +42,5 @@ private:
 
     glm::vec3 moveOffset = glm::vec3(0.0f);
 
-    bool useExtraMatrix = false; // 1b task , prenasobenie w * 20
+    bool useExtraMatrix = false; 
 };

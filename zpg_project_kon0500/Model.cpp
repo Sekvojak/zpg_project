@@ -54,7 +54,7 @@ Model::Model(const char* name)
         }
     }
 
-    stride = 8;          // 3 pozícia + 3 normála + 2 UV
+    stride = 8;          // 3 position + 3 normal + 2 UV
     positionSize = 3;
     normalSize = 3;
     uvSize = 2;
@@ -68,8 +68,6 @@ Model::Model(const char* name)
     setupMesh();  
 }
 
-// svetlo aktualizovat iba ked sa zmeni ??
-// svetluska specialny drawable object ktory napriklad dedi svetlo
 
 void Model::setupMesh() {
     glGenVertexArrays(1, &VAO);
@@ -81,7 +79,6 @@ void Model::setupMesh() {
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, positionSize, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)0);
-    //(index , pocet , typ , normalized , posun , pocatek )
     
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, normalSize, GL_FLOAT, GL_TRUE, stride * sizeof(float), (void*)(positionSize * sizeof(float)));
