@@ -60,8 +60,7 @@ void DrawableObject::setTexture(Texture* tex) {
 	material.texture = tex;
 }
 
-glm::mat4 DrawableObject::computeModelMatrix() const
-{
+glm::mat4 DrawableObject::computeModelMatrix() const {
 	glm::mat4 m = glm::mat4(1.0f);
 	if (transformation)
 		m = transformation->getMatrix();

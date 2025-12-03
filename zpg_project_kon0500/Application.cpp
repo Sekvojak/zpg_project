@@ -209,7 +209,46 @@ void Application::handleInput() {
     }
 
    
+    static bool gHeld = false;
+
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+    {
+        if (!gHeld)
+        {
+            toggleFullscreen();
+            gHeld = true;
+        }
+    }
+    else
+    {
+        gHeld = false;
+    }
+
+
 }
+
+void Application::toggleFullscreen() {
+
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+    if (!isFullscreen)
+    {
+        glfwGetWindowPos(window, &windowedX, &windowedY);
+        glfwGetWindowSize(window, &windowedW, &windowedH);
+
+        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+
+        isFullscreen = true;
+    }
+    else
+    {
+        glfwSetWindowMonitor( window, nullptr, windowedX, windowedY, windowedW, windowedH, 0);
+        isFullscreen = false;
+    }
+}
+
+
 
 void Application::createShaders() {
     shaderManager.createShaders(camera);

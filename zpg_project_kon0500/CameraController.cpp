@@ -20,7 +20,7 @@ CameraController::CameraController(Camera* cam) {
 	flashlight->setType(LightType::Spot);
 	flashlight->setDirection(front);
 	flashlight->setCutOff(glm::cos(glm::radians(12.5f)));
-	flashlight->setAttenuation(1.0f, 0.02f, 0.002f);
+	flashlight->setAttenuation(1.0f, 0.12f, 0.012f);
 	flashlight->setActive(false);
 }
 

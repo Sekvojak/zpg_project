@@ -383,7 +383,8 @@ Scene* SceneFactory::createScene4(ShaderManager* shaderManager, ModelManager* mo
 	loginT->addChild(new TransformDynamicRotate(2.0f, glm::vec3(0, 1, 0)));
 	loginT->addChild(new TransformTranslate(glm::vec3(12.0f, 0.0f, 0.0f)));
 	loginT->addChild(new TransformDynamicRotate(-10.0f, glm::vec3(0, 1, 0))); 
-	loginT->addChild(new TransformTranslate(glm::vec3(0.7f, 0, 0)));          
+	loginT->addChild(new TransformTranslate(glm::vec3(0.7f, 0, 0))); 
+	loginT->addChild(new TransformScale(glm::vec3(0.5f)));
 
 
 	auto* loginObj = new DrawableObject(loginModel, shaderLambert, loginT);
@@ -545,7 +546,7 @@ Scene* SceneFactory::createScene5(ShaderManager* shaderManager, ModelManager* mo
 	formulaMat.rs = 0.8f;   
 	formulaMat.h = 64.0f;  
 
-	formula->setMaterial(formulaMat);
+	formula->setMaterial(formulaMat); 
 	scene->addObject(formula);
 
 	Model* hamburgerModel = modelManager->get("hamburger");

@@ -26,6 +26,7 @@ public:
 	void handleInput();
 	void handleLeftClick();
 	void setupScenes();
+	void toggleFullscreen();
 private:
 	GLFWwindow* window = nullptr;
 	ShaderManager shaderManager;
@@ -41,6 +42,10 @@ private:
 	std::vector<glm::vec3> bezierPoints;
 	float bezierSpeed = 0.1f;
 	std::vector<DrawableObject*> bezierMarkers;
+
+	bool isFullscreen = false;
+	int windowedX = 100, windowedY = 100;
+	int windowedW = 800, windowedH = 600;
 
 };
 
