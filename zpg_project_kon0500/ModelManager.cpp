@@ -81,4 +81,7 @@ void ModelManager::createModels() {
     loadFromObj(
         "login", "login.obj"
     );
+    loadFromObj(
+        "teren", "teren.obj"
+    );
 }

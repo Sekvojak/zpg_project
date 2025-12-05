@@ -73,7 +73,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager, ModelManager* mo
 	auto* t1 = new TransformationComposite();
 	t1->addChild(new TransformScale(glm::vec3(scale)));
 	t1->addChild(new TransformTranslate(glm::vec3(-translation, 0.0f, 0.0f)));
-	auto* o1 = new DrawableObject(sphereModel, shaderPhong, t1);
+	auto* o1 = new DrawableObject(sphereModel, shaderConst, t1);
 	o1->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o1);
 
@@ -89,7 +89,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager, ModelManager* mo
 	auto* t3 = new TransformationComposite();
 	t3->addChild(new TransformScale(glm::vec3(scale)));
 	t3->addChild(new TransformTranslate(glm::vec3(0.0f, translation, 0.0f)));
-	auto* o3 = new DrawableObject(sphereModel, shaderPhong, t3);
+	auto* o3 = new DrawableObject(sphereModel, shaderLambert, t3);
 	o3->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o3);
 
@@ -98,7 +98,7 @@ Scene* SceneFactory::createScene2(ShaderManager* shaderManager, ModelManager* mo
 	t4->addChild(new TransformScale(glm::vec3(scale)));
 	t4->addChild(new TransformTranslate(glm::vec3(0.0f, -translation, 0.0f)));
 
-	auto* o4 = new DrawableObject(sphereModel, shaderPhong, t4);
+	auto* o4 = new DrawableObject(sphereModel, shaderBlinn, t4);
 	o4->setColor(glm::vec3(0.385, 0.647, 0.812));
 	scene->addObject(o4);
 
@@ -134,7 +134,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* mo
 
 	Model* bushModel = modelManager->get("bush");
 	
-	Model* plainModel = modelManager->get("plain");
+	Model* plainModel = modelManager->get("teren");
 
 	Model* sphereModel = modelManager->get("sphere");
 
@@ -176,7 +176,7 @@ Scene* SceneFactory::createScene3(ShaderManager* shaderManager, ModelManager* mo
 	scene->setSkybox(skybox);
 
 	// grass
-	auto* planeTransform = new TransformScale(glm::vec3(50.0f));
+	auto* planeTransform = new TransformScale(glm::vec3(1.0f));
 	auto* planeObj = new DrawableObject(plainModel, shaderLambert, planeTransform);
 	
 	Texture* grassTexture = new Texture("Assets/grass.png");
@@ -493,8 +493,8 @@ Scene* SceneFactory::createScene5(ShaderManager* shaderManager, ModelManager* mo
 	auto* light = new Light(glm::vec3(0.0f, 25.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 	auto* lightAboveFiona = new Light(glm::vec3(-13.0f, 15.0f, -10.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
-	Model* plainModel = modelManager->get("plain");
-	auto* planeTransform = new TransformScale(glm::vec3(50.0f));
+	Model* plainModel = modelManager->get("teren");
+	auto* planeTransform = new TransformScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	auto* planeObj = new DrawableObject(plainModel, shaderLambert, planeTransform);
 
 	Texture* grassTexture = new Texture("Assets/grass.png");
