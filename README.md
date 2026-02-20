@@ -76,13 +76,17 @@ Steps:
 
 ---
 
-## 📸 Screenshots / Demo
+## 📸 Screenshots 
 
 ### Skybox + Texture objects
-![Skybox](docs/scene1.png)
+![Skybox](zpg_project_kon0500/docs/scene1.png)
 
 ### Space scene
-![Picking](docs/space.png)
+![Space](zpg_project_kon0500/docs/space.png)
+
+## 📸 Screenshots 
+
+
 
 ---
 
